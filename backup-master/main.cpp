@@ -26,11 +26,11 @@ void setMemory(mixed memory[], int size, int pos, mixed data);
 /// when all three parameters are negative for mixed number
 /// constructor there's a strange resu
 
-struct twin
-{
-    string s;
-    void* p;
-};
+//struct twin
+//{
+//    string s;
+//    void* p;
+//};
 
 int main()
 {

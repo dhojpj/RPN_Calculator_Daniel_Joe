@@ -47,9 +47,9 @@ public:
 private:
     char a[100]; // holds the c_string
     char *ptr; // points to the respective tokens separated by space " "
-    Stack<twin> *s_numbers;
-    Stack<twin> *s_operators;
-    Queue<twin> *q;
+    Stack<twin*> *s_numbers;
+    Stack<twin*> *s_operators;
+    Queue<twin*> *q;
 
     void copy(const Parser &p);
     void parse();
@@ -58,9 +58,9 @@ private:
 
 Parser::Parser()
 {
-    s_numbers = new Stack<twin>;
-    s_operators = new Stack<twin>;
-    q = new Queue<twin>;
+    s_numbers = new Stack<twin*>;
+    s_operators = new Stack<twin*>;
+    q = new Queue<twin*>;
 }
 
 Parser::Parser(const Parser &p)
@@ -104,18 +104,29 @@ string Parser::checkToken(char *t)
 {
     cout << "checking = \"" << t << "\"" << endl;
 
-    string s;
+    string s_t;
 
     if (ispunct(t[0]) && t[1] == '\0')
     {
         // need to create data and enqueue it
 
-        s = typeid(char).name();
-        cout << "s = " << s << endl;
-        char c = t[0];
+        s_t = typeid(char).name();
+        cout << "s = " << s_t << endl;
 
-        cout << c << endl;
-        return s;
+        char *op = new char;
+        *op = t[0];
+        twin *tw = new twin;
+
+        tw->s = s_t;
+        tw->v = &op;
+
+        q->enqueue(tw);
+
+
+        cout << "enqueued\t" << q->front()->s << "\t" << *(char*)(q->front()->v) << endl;
+
+        cout << endl;
+        return s_t;
     }
 
     else
@@ -131,16 +142,16 @@ string Parser::checkToken(char *t)
                 cout << "is double\n";
 
                 // check if fraction
-                s = typeid(mixed).name();
+                s_t = typeid(mixed).name();
 
-                return s;
+                return s_t;
 
             }
             else if (isdigit(t[i]) && t[i+1] == '/')
             {
                 // check if fraction
-                s = typeid(mixed).name();
-                return s;
+                s_t = typeid(mixed).name();
+                return s_t;
             }
             else if (!isdigit(t[i]))
             {
@@ -152,10 +163,10 @@ string Parser::checkToken(char *t)
         // if it traverse through through
         if (isInt)
         {
-            s = typeid(int).name();
+            s_t = typeid(int).name();
             cout << "is an integer\n";
 
-            return s;
+            return s_t;
         }
 
 
@@ -166,7 +177,7 @@ string Parser::checkToken(char *t)
 
 
 
-    return s;
+    return s_t;
 }
 
 void Parser::pushToken(string s, char *t)
