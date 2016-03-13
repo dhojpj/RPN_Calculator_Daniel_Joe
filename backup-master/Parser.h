@@ -7,9 +7,6 @@
 #include "Stack.h"
 #include "mixed.h"
 
-// tokenize input
-// label and insert into queue
-
 // determine the RPN algorithm and insert into stacks and do operations
 
 using std::cin;
@@ -38,8 +35,8 @@ public:
     Parser& operator<<(const Parser &p);
 
     void getInput();
-    string checkToken(char* t); // checks token, char by char, to determine its type and address
-    void enqueueToken(twin *tw);
+    void checkToken(char* t); // checks token, and returns where to push them
+    void enqueueTokens(char *t);
     void pushToken(twin *tw);
 
 
@@ -101,15 +98,19 @@ void Parser::getInput()
 
 
 // check for int, double, fraction, mixed, and operators
-// checks, then pushes with string,char*
-string Parser::checkToken(char *t)
+// checks, then pushes struct with string,char*
+void Parser::checkToken(char *t)
+{
+
+
+}
+
+// checks the type of data, and enqueues the struct twin into the queue (there is only 1 queue)
+void Parser::enqueueTokens(char *t)
 {
     twin *tw = new twin;
-    string s_t; // don't really need this
 
-    cout << "checking = \"" << t << "\"" << endl;
-
-
+    // checking for operation and/or letter memory
     if (ispunct(t[0]) && t[1] == '\0')
     {
         // need to create data and enqueue it
@@ -119,53 +120,33 @@ string Parser::checkToken(char *t)
         tw->s = typeid(string).name();
         tw->v = s_d;
 
+        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         cout << "twin\t" << tw->s << "\t" << *(string*)tw->v << endl;
 
-
-
-//        cout << "enqueued\t" << q->front()->s << "\t" << *(string*)(q->front()->v) << endl;
-
         cout << endl;
-//        return s_t;
     }
-
-    else
+    else // it's a number
     {
         bool isInt = true;
         for (unsigned int i = 0; t[i] != '\0'; ++i)
         {
-            cout << "t[" << i << "] = " << t[i] << endl;
-
             if (isdigit(t[i]) && t[i+1] == '.')
             {
                 // checking if double
-                cout << t << " is double\n";
-
-                // check if fraction
-
                 stringstream ss(t);
                 double *d = new double;
                 ss >> *d;
                 tw->s = typeid(mixed).name();
                 tw->v = d;
 
+
+                //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 cout << "twin = " << tw->s << "\t" << *(double*)tw->v << endl;
-
-                return "";
-
-//                return s_t;
 
             }
             else if (isdigit(t[i]) && t[i+1] == '/')
             {
                 // check if fraction
-                // checking if double
-                cout << t << " is fraction \n";
-
-// fraction needs to be separated by numerator and denominator
-                // need to check parsing sequence for mixed number
-                    // if mixed + mixed, then it's probably a mixed number?
-
                 string fract(t);
                 string fractNum = fract.substr(0,i+1);
                 string fractDenom = fract.substr(i+2, fract.length());
@@ -173,68 +154,51 @@ string Parser::checkToken(char *t)
                 cout << "num = " << fractNum << endl;
                 cout << "denom = " << fractDenom << endl;
 
-//                stringstream ss(t);
-//                double *d = new double;
-//                ss >> *d;
                 mixed *m = new mixed(0, atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
                 tw->s = typeid(mixed).name();
                 tw->v = m;
 
+                //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 cout << "twin = " << tw->s << "\t" << *(mixed*)tw->v << endl;
-
-                return "";
-
-
-
             }
             else if (!isdigit(t[i]))
             {
                 isInt = false;
-                cout << t << " is not an int\n";
             }
 
         }
-
-        // if it traverse through through
+        // if it traversed through, then it's an integer
         if (isInt)
         {
-//            s_t = typeid(mixed).name();
-
-            cout << t << " is an integer\n";
-
             int i = atoi(t);
 
-//            cout << "i = " << i << endl;
-
             mixed *m = new mixed(i,0,1);
-
-//            cout << "*m = " << *m << endl;
 
             tw->s = typeid(mixed).name();
             tw->v = m;
 
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             cout << "twin = " << tw->s << "\t" << *(mixed*)tw->v << endl;
 
-//            return s_t;
         }
-
-
-
 
     }
 
-
     q->enqueue(tw);
-
-
-//    cout << *q << endl;
-    return s_t;
 }
 
 
-void Parser::enqueueToken(twin *tw)
+// parses into tokens and enqueues into queue
+void Parser::parse()
 {
-    q->enqueue(tw);
+    cout << "parsing\n";
+    char *ptr = strtok(a, " ");
+
+    while (ptr != NULL)
+    {
+        enqueueTokens(ptr); // callback function to check and enqueue tokens
+        ptr = strtok(NULL, " ");
+    }
 }
 
 void Parser::pushToken(twin *tw)
@@ -249,22 +213,7 @@ void Parser::pushToken(twin *tw)
     }
 }
 
-// parses into tokens and pushes onto stack and queue
-void Parser::parse()
-{
-    cout << "parsing\n";
-    char *ptr = strtok(a, " ");
 
-    checkToken(ptr);
-
-    while (ptr != NULL)
-    {
-        ptr = strtok(NULL, " ");
-        checkToken(ptr);
-    }
-
-    ptr = NULL;
-}
 
 
 istream& operator>>(istream &in, Parser &p)
