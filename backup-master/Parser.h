@@ -110,20 +110,29 @@ string Parser::checkToken(char *t)
     {
         // need to create data and enqueue it
 
-        s_t = typeid(char).name();
-        cout << "s = " << s_t << endl;
+        s_t = typeid(string).name();
 
-        char *op = new char;
-        *op = t[0];
+        string *s_d = new string;
+        *s_d = (string)t;
+
+
+        // CHECKED
+        cout << "s = " << s_t << endl;
+//                cout << "&s_d\t" << &s_d << endl;
+        cout << "s_d\t" << s_d << endl;
+
+
         twin *tw = new twin;
 
         tw->s = s_t;
-        tw->v = &op;
+        tw->v = s_d;
+
+        cout << "twin\t" << tw->s << "\t" << tw->v << "\t" << *(string*)tw->v << endl;
 
         q->enqueue(tw);
 
 
-        cout << "enqueued\t" << q->front()->s << "\t" << *(char*)(q->front()->v) << endl;
+        cout << "enqueued\t" << q->front()->s << "\t" << *(string*)(q->front()->v) << endl;
 
         cout << endl;
         return s_t;

@@ -2,7 +2,7 @@
 #define NODE_H
 
 #include <iostream>
-#include <typeinfo.h>
+#include <typeinfo>
 
 using std::cout;
 using std::cin;
