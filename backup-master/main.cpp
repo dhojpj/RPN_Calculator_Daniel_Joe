@@ -34,111 +34,11 @@ struct twin
 
 int main()
 {
-    fraction ttt(1,2);
-    void* vp;
-    vp = &ttt;
+    Parser *p = new Parser;
 
-    twin ttpair;
-    ttpair.s = typeid(ttt).name();
-    ttpair.p = vp;
+    p->getInput();
 
-    Stack<mixed> *stk = new Stack<mixed>(100);
-    Stack<twin> st(100);
-
-    st.push(ttpair);
-
-    twin tempt = ttpair;
-    twin temps =  st.pop();
-    string str3 = temps.s;
-    if(str3=="8fraction")
-    {
-        cout<<" asdfa go itadsf"<<endl;
-        fraction tempmixed = (fraction*) temps.p;
-    }
-
-    cout<<"typestr3: "<<str3<<endl;
-
-
-
-    stk->push(mixed(1,2,3));
-    stk->push(fraction(1,2));
-    cout<<"peek "<<stk->peek();
-    cout<<"pop "<<stk->pop();
-    cout<<"pop "<<stk->pop();
-    //std::array<std::pair<std::string, int>, 3> test{{"a", 1}, {"b", 2}, {"c", 3}};
-
-
-
-    memory m(30),kk ;
-    fraction dd(1,2);
-    cout<<m<<endl;
-    m.setMemory(A,dd);
-    m.setMemory(Z,dd);
-    cout<<m<<endl;
-
-    //string for the memory slot
-    string memoryVar;
-    string str;
-
-    //mixed fraction array
-    mixed memory[30];
-    fraction half(1,2);
-
-    cout<<"type: "<<(typeid(half).name())<<endl;
-
-    for(int i=0; i<30;i++)
-    {
-        memory[i] = mixed(i+.2);
-    }
-
-    for(int i = 0; i < 30; i++)
-    {
-        cout<<memory[i]<<" ";
-    }
-
-    clearMemoryPos(memory,30, A);
-
-//    clearMemory(memory, 30);
-    for(int i = 0; i < 30; i++)
-    {
-        cout<<memory[i];
-    }
-
-
-    // ask the user for input
-    // will convert everything to upper case
-
-//    str= getUserInput();
-
-//    //find the index of =
-//    indexOfEqual = str.find_first_of("=");
-
-
-//    if(indexOfEqual <0)
-//        cout<<"not here"<<endl;
-//    else
-//        memoryVar = str.substr(0,indexOfEqual);
-
-//    //trim the spaces
-//    memoryVar = trimBoth(memoryVar);
-
-    //find the right hand side of the string
-//    string rhsStr = str.substr(indexOfEqual,str.size());
-
-//    // check if there are any letter in the string
-//    //replace the letter with the contain from the memory array
-
-//    if((rhsStr.find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ")!=-1)) // there are letter in the string
-//    {
-//      // replace the letter with
-//    }else
-//    {
-//        //no letter in the string
-//        // prase it to stack and queue
-//    }
-
-
-      return 0;
+    return 0;
 }
 
 void test_constructor()
