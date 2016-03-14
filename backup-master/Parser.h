@@ -39,12 +39,15 @@ public:
     void printTempQueue();
 
     void RPN();
+    void poppingStackParentheses();
+    void poppingStackAll();
 
     friend istream& operator>>(istream &in, Parser &p);
     friend ostream& operator<<(ostream &out, const Parser &p);
 
 private:
     char a[100]; // holds the c_string
+    mixed **o; // holds the operations
 
     Stack<twin*> *s_numbers;
     Stack<twin*> *s_operators;
@@ -66,6 +69,14 @@ Parser::Parser()
     s_operators = new Stack<twin*>;
     q = new Queue<twin*>;
     q_temp = new Queue<twin*>;
+//    o = new mixed*[100];
+
+//    o['+'] = &mixed::add;
+//    o['-'] = ;
+//    o['*'] = ;
+//    o['/'] = ;
+//    o['^'] = ;
+
 }
 
 Parser::Parser(const Parser &p)
@@ -90,7 +101,6 @@ void Parser::copy(const Parser &p)
 }
 
 
-
 //sets up the order of precedence
 void Parser::RPN()
 {
@@ -98,33 +108,24 @@ void Parser::RPN()
     {
         if(q_temp->front()->s == typeid(string*).name())
         {
-            cout << "rpn if string\n";
             if (*(string*)q_temp->front()->v == "(")
             {
                 s_operators->push(q_temp->dequeue());
 
                 this->orderOfPrecedence();
+                this->poppingStackParentheses();
             }
         }
         else if (q_temp->front()->s == typeid(mixed*).name())
         {
-            // call the function that takes in a normal expression
-                cout << "rpn else\n";
             this->orderOfPrecedence();
-
-
-
         }
-
-//        break;
     }
+    this->poppingStackAll();
+
+
 
 }
-
-
-
-
-
 
 // also enqueues
 void Parser::orderOfPrecedence()
@@ -132,14 +133,14 @@ void Parser::orderOfPrecedence()
     // it starts out with a number
     while(!q_temp->empty())
     {
-        cout << "starting while\n";
         if (q_temp->front()->s == typeid(string*).name())
         {
             if (*(string*)q_temp->front()->v == ")")
             {
                 // get rid of the )
-                // stop loop, and function will proceed with the popping of stack operators
                 q_temp->dequeue();
+
+                // stop loop, and function will proceed with the popping of stack operators
                 break;
             }
             // not sure if this needs to be here...............
@@ -159,27 +160,35 @@ void Parser::orderOfPrecedence()
                     if(*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/")
                     {
                         q->enqueue(s_operators->pop());
+//                        cout << "order of operation\t" << *(string*)q->front()->v << endl;
                     }
                 }
 
                 s_operators->push(q_temp->dequeue());
+//                cout << "s_op+*\t" << *(string*)s_operators->peek()->v << endl;
             }
             else
             {
                 s_operators->push(q_temp->dequeue());
+
+//                cout << "s_op*\t" << *(string*)s_operators->peek()->v << endl;
             }
         }
         else if (q_temp->front()->s == typeid(mixed*).name())
         {
             q->enqueue(q_temp->dequeue());
+//            cout << "enq mixed\t" << *(mixed*)q->front()->v << endl;
         }
 
     }
 
-    cout << "done first while\n";
+}
+
+
+void Parser::poppingStackParentheses()
+{
     while(!s_operators->empty())
     {
-        cout << "popping stack\n";
         if (*(string*)s_operators->peek()->v != "(")
         {
             q->enqueue(s_operators->pop());
@@ -187,13 +196,21 @@ void Parser::orderOfPrecedence()
         else
         {
             s_operators->pop();
+            break;
         }
 
     }
 }
 
+void Parser::poppingStackAll()
+{
+    while(!s_operators->empty())
+    {
+        q->enqueue(s_operators->pop());
 
-// print queue
+    }
+}
+
 
 void Parser::getInput()
 {

@@ -23,6 +23,15 @@ class mixed : public fraction
         mixed& operator=(int x);
         mixed& operator=(double x);
         mixed& operator=(const fraction &x);
+
+
+        void add(const mixed &x);
+        void minus(const mixed &x);
+        void multiply(const mixed &x);
+        void divide(const mixed &x);
+        void power(const mixed &x);
+
+
         ~mixed();
         void value(int w = 0, int n = 0, int d = 1);
         void value(double x);
