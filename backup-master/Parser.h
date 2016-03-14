@@ -121,6 +121,7 @@ void Parser::RPN()
             }
 
             this->orderOfPrecedence();
+            this->poppingStackParentheses();
         }
         else
         {
