@@ -24,13 +24,11 @@ class mixed : public fraction
         mixed& operator=(double x);
         mixed& operator=(const fraction &x);
 
-
-        void add(const mixed &x);
-        void minus(const mixed &x);
-        void multiply(const mixed &x);
-        void divide(const mixed &x);
-        void power(const mixed &x);
-
+        void add(const mixed &y);
+        void minus(const mixed &y);
+        void multiply(const mixed &y);
+        void divide(const mixed &y);
+        void power(const mixed &y);
 
         ~mixed();
         void value(int w = 0, int n = 0, int d = 1);
@@ -41,6 +39,12 @@ class mixed : public fraction
 
         friend
         istream& operator>>(istream& in, mixed &number);
+
+//        friend mixed add(const mixed &x, const mixed &y);
+//        friend mixed minus(const mixed &x, const mixed &y);
+//        friend mixed multiply(const mixed &x, const mixed &y);
+//        friend mixed divide(const mixed &x, const mixed &y);
+//        friend mixed power(const mixed &x, const mixed &y);
 
     private:
 

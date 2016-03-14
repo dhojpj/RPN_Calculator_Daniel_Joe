@@ -16,6 +16,11 @@ using std::string;
 using std::ostream;
 using std::istream;
 
+//typedef mixed(mixed::*functPtr)(mixed,mixed);
+typedef void(mixed::*functPtr)(const mixed&);
+
+
+
 class Parser
 {
 public:
@@ -27,7 +32,7 @@ public:
     };
 
     Parser();
-    Parser(const Parser &p);
+//    Parser(const Parser &p);
     ~Parser();
 
     Parser& operator=(const Parser &p);
@@ -47,14 +52,16 @@ public:
 
 private:
     char a[100]; // holds the c_string
-    mixed **o; // holds the operations
+    functPtr *fp; // holds the operations
 
     Stack<twin*> *s_numbers;
     Stack<twin*> *s_operators;
     Queue<twin*> *q;
     Queue<twin*> *q_temp;
 
-//    void checkToken(char *t); // checks token, and returns where to push them
+
+
+
     void createToken(char *t);
 
     void orderOfPrecedence();
@@ -69,9 +76,9 @@ Parser::Parser()
     s_operators = new Stack<twin*>;
     q = new Queue<twin*>;
     q_temp = new Queue<twin*>;
-//    o = new mixed*[100];
+    fp = new functPtr[100];
 
-//    o['+'] = &mixed::add;
+    fp['+'] = &mixed::add;
 //    o['-'] = ;
 //    o['*'] = ;
 //    o['/'] = ;
@@ -79,26 +86,26 @@ Parser::Parser()
 
 }
 
-Parser::Parser(const Parser &p)
-{
-    copy(p);
-}
+//Parser::Parser(const Parser &p)
+//{
+//    copy(p);
+//}
 
 Parser::~Parser(){	}
 
-Parser& Parser::operator=(const Parser &p)
-{
-    copy(p);
-}
+//Parser& Parser::operator=(const Parser &p)
+//{
+//    copy(p);
+//}
 
-Parser& Parser::operator>>(Parser &p){	}
-Parser& Parser::operator<<(const Parser &p){	}
+//Parser& Parser::operator>>(Parser &p){	}
+//Parser& Parser::operator<<(const Parser &p){	}
 
 
-void Parser::copy(const Parser &p)
-{
+//void Parser::copy(const Parser &p)
+//{
 
-}
+//}
 
 
 //sets up the order of precedence
@@ -141,7 +148,6 @@ void Parser::orderOfPrecedence()
                 // stop loop, and function will proceed with the popping of stack operators
                 break;
             }
-            // not sure if this needs to be here...............
             else if(*(string*)q_temp->front()->v == "(")
             {
                 RPN();
@@ -192,12 +198,10 @@ void Parser::poppingStackParentheses()
     {
         if (*(string*)s_operators->peek()->v != "(")
         {
-//            cout << "pop not ( enq\t" << *(string*)s_operators->peek()->v << endl;
             q->enqueue(s_operators->pop());
         }
         else
         {
-//            cout << "pop ( but not enq\t" << *(string*)s_operators->pop()->v << endl;
             s_operators->pop();
             break;
         }
@@ -349,6 +353,10 @@ void Parser::printRPNQueue()
         if(q->front()->s == typeid(string*).name())
         {
             cout << (*(string*)q->dequeue()->v)[0] << " ";
+//            cout << (*(string*)q->front()->v)[0] << " ";
+//            twin *tw_temp = s_numbers->pop(); // to store it
+//            (*(mixed*)s_numbers->pop()->v).(fp[(*(string*)q->dequeue()->v)[0]](*(mixed*)tw_temp->v));
+//                    << " ";
         }
         else if (q->front()->s == typeid(mixed*).name())
         {

@@ -107,3 +107,24 @@ istream& operator>>(istream& in, mixed &number)
     number.value(w,n,d);
     return in;
 }
+
+
+
+
+
+
+void mixed::add(const mixed &y)
+{
+
+}
+void mixed::minus(const mixed &y){}
+void mixed::multiply(const mixed &y){}
+void mixed::divide(const mixed &y){}
+void mixed::power(const mixed &y){}
+
+
+//mixed add(const mixed &x, const mixed &y){}
+//mixed minus(const mixed &x, const mixed &y){}
+//mixed multiply(const mixed &x, const mixed &y){}
+//mixed divide(const mixed &x, const mixed &y){}
+//mixed power(const mixed &x, const mixed &y){}
