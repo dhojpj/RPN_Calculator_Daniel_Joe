@@ -93,7 +93,24 @@ void Parser::getInput()
     cout << "Expression: ";
     cin.getline(a, 100);
 
+    if(string(a).size() == 0)
+    {
+        exit(0);
+    }
+
     this->parse();
+}
+
+// parses into tokens and enqueues into queue
+void Parser::parse()
+{
+    char *ptr = strtok(a, " ");
+
+    while (ptr != NULL)
+    {
+        enqueueTokens(ptr); // callback function to check and enqueue tokens
+        ptr = strtok(NULL, " ");
+    }
 }
 
 
@@ -185,20 +202,6 @@ void Parser::enqueueTokens(char *t)
     }
 
     q->enqueue(tw);
-}
-
-
-// parses into tokens and enqueues into queue
-void Parser::parse()
-{
-    cout << "parsing\n";
-    char *ptr = strtok(a, " ");
-
-    while (ptr != NULL)
-    {
-        enqueueTokens(ptr); // callback function to check and enqueue tokens
-        ptr = strtok(NULL, " ");
-    }
 }
 
 void Parser::pushToken(twin *tw)

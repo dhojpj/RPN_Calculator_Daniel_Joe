@@ -34,6 +34,8 @@ void setMemory(mixed memory[], int size, int pos, mixed data);
 
 int main()
 {
+    cout << "This program takes an algebraic expression,\nand translates it into Reverse Polish Notation\n\n";
+
     Parser *p = new Parser;
 
     p->getInput();
