@@ -88,9 +88,9 @@ void mixed::value(const fraction &x)
 ostream& operator<<(ostream& out, const mixed &number)
 {
     if(number.get_num() == 0 || number.get_denom() == 1)
-        out<<number.get_num()<<" ";
+        out<<number.get_num();
     else
-        out<<number.get_num()<<"/"<<number.get_denom()<<" ";
+        out<<number.get_num()<<"/"<<number.get_denom();
     return out;
 }
 

@@ -40,6 +40,12 @@ int main()
 
     p->getInput();
 
+    p->printTempQueue();
+
+    p->RPN();
+
+    p->printRPNQueue();
+
     return 0;
 }
 

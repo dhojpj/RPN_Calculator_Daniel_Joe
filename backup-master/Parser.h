@@ -35,21 +35,26 @@ public:
     Parser& operator<<(const Parser &p);
 
     void getInput();
-    void checkToken(char* t); // checks token, and returns where to push them
-    void enqueueTokens(char *t);
-    void pushToken(twin *tw);
+    void printRPNQueue();
+    void printTempQueue();
 
+    void RPN();
 
     friend istream& operator>>(istream &in, Parser &p);
     friend ostream& operator<<(ostream &out, const Parser &p);
 
 private:
     char a[100]; // holds the c_string
-//    char *ptr; // points to the respective tokens separated by space " "
+
     Stack<twin*> *s_numbers;
     Stack<twin*> *s_operators;
     Queue<twin*> *q;
+    Queue<twin*> *q_temp;
 
+//    void checkToken(char *t); // checks token, and returns where to push them
+    void createToken(char *t);
+
+    void orderOfPrecedence(twin* tw);
     void copy(const Parser &p);
     void parse();
 };
@@ -60,6 +65,7 @@ Parser::Parser()
     s_numbers = new Stack<twin*>;
     s_operators = new Stack<twin*>;
     q = new Queue<twin*>;
+    q_temp = new Queue<twin*>;
 }
 
 Parser::Parser(const Parser &p)
@@ -86,7 +92,47 @@ void Parser::copy(const Parser &p)
 
 
 
+void Parser::RPN()
+{
+//    if(this =='(')
+//    {
+//        while (next != ')')
+//        {
+//            // push and pop; order of operations
+//            orderOfPrecedence(tw);
 
+//        }
+//    }
+//    else
+//    {
+//        orderOfPrecedence(tw);
+//    }
+}
+
+// also enqueues
+void Parser::orderOfPrecedence(twin *tw)
+{
+    cout << "checking order\n";
+
+    if(tw->s == typeid(string).name())
+    {
+//        cout << tw->s << endl;
+//        if(tw->v) // if order of precedes, then pop and push
+//            // also need my function pointer array
+        s_operators->push(tw);
+        // then enqueue
+    }
+    else if(tw->s == typeid(mixed*).name())
+    {
+//        cout << tw->s << endl;
+        s_numbers->push(tw);
+    }
+
+//    q->enqueue(tw);
+}
+
+
+// print queue
 
 void Parser::getInput()
 {
@@ -108,24 +154,17 @@ void Parser::parse()
 
     while (ptr != NULL)
     {
-        enqueueTokens(ptr); // callback function to check and enqueue tokens
+        createToken(ptr); // callback function to check and enqueue tokens
         ptr = strtok(NULL, " ");
     }
 }
 
-
-// check for int, double, fraction, mixed, and operators
-// checks, then pushes struct with string,char*
-void Parser::checkToken(char *t)
-{
-
-
-}
-
 // checks the type of data, and enqueues the struct twin into the queue (there is only 1 queue)
-void Parser::enqueueTokens(char *t)
+void Parser::createToken(char *t)
 {
     twin *tw = new twin;
+
+//    cout << "t = \"" << t << "\"" << endl;
 
     // checking for operation and/or letter memory
     if (ispunct(t[0]) && t[1] == '\0')
@@ -134,11 +173,8 @@ void Parser::enqueueTokens(char *t)
         string *s_d = new string;
         *s_d = (string)t;
 
-        tw->s = typeid(string).name();
+        tw->s = typeid(string*).name();
         tw->v = s_d;
-
-        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        cout << "twin\t" << tw->s << "\t" << *(string*)tw->v << endl;
 
         cout << endl;
     }
@@ -151,15 +187,16 @@ void Parser::enqueueTokens(char *t)
             {
                 // checking if double
                 stringstream ss(t);
-                double *d = new double;
-                ss >> *d;
-                tw->s = typeid(mixed).name();
-                tw->v = d;
+                double d;// = new double;
+                ss >> d;
 
+                tw->s = typeid(mixed*).name();
 
-                //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                cout << "twin = " << tw->s << "\t" << *(double*)tw->v << endl;
+                mixed *m = new mixed;
 
+                *m = d;
+
+                tw->v = m;
             }
             else if (isdigit(t[i]) && t[i+1] == '/')
             {
@@ -168,15 +205,10 @@ void Parser::enqueueTokens(char *t)
                 string fractNum = fract.substr(0,i+1);
                 string fractDenom = fract.substr(i+2, fract.length());
 
-                cout << "num = " << fractNum << endl;
-                cout << "denom = " << fractDenom << endl;
-
                 mixed *m = new mixed(0, atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
-                tw->s = typeid(mixed).name();
+                tw->s = typeid(mixed*).name();
                 tw->v = m;
 
-                //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                cout << "twin = " << tw->s << "\t" << *(mixed*)tw->v << endl;
             }
             else if (!isdigit(t[i]))
             {
@@ -191,33 +223,65 @@ void Parser::enqueueTokens(char *t)
 
             mixed *m = new mixed(i,0,1);
 
-            tw->s = typeid(mixed).name();
+            tw->s = typeid(mixed*).name();
             tw->v = m;
-
-            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            cout << "twin = " << tw->s << "\t" << *(mixed*)tw->v << endl;
-
         }
 
     }
 
-    q->enqueue(tw);
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//    if(tw->s == typeid(string*).name())
+//    {
+//        cout << "twin = " << tw->s << "\t\"" << *(string*)tw->v << "\"" << endl;
+//    }
+//    else if (tw->s == typeid(mixed*).name())
+//    {
+//        cout << "twin = " << tw->s << "\t\"" << *(mixed*)tw->v << "\"" << endl;
+//    }
+
+    // initially the temporary queue stores the expressio
+    // and from there the calculations are done
+    q_temp->enqueue(tw);
+//    orderOfPrecedence(tw);
 }
 
-void Parser::pushToken(twin *tw)
+
+void Parser::printTempQueue()
 {
-    if(tw->s == typeid(string).name())
+    while(!q_temp->empty())
     {
-        s_operators->push(tw);
+        if(q_temp->front()->s == typeid(string*).name())
+        {
+            cout << (*(string*)q_temp->dequeue()->v)[0] << " ";
+        }
+        else if (q_temp->front()->s == typeid(mixed*).name())
+        {
+            cout << *(mixed*)q_temp->dequeue()->v << " ";
+        }
     }
-    else if(tw->s == typeid(mixed).name())
-    {
-        s_numbers->push(tw);
-    }
+    cout << endl;
 }
 
+void Parser::printRPNQueue()
+{
+    while(!q->empty())
+    {
+        if(q->front()->s == typeid(string*).name())
+        {
+            cout << (*(string*)q->dequeue()->v)[0] << " ";
+        }
+        else if (q->front()->s == typeid(mixed*).name())
+        {
+            cout << *(mixed*)q->dequeue()->v << " ";
+        }
+    }
 
+    // print stack's answer
 
+    cout << "= " << endl; // insert stack answer
+}
 
 istream& operator>>(istream &in, Parser &p)
 {
