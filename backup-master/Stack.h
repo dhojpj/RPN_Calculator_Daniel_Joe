@@ -16,7 +16,7 @@ template<typename T>
 class Stack
 {
 public:
-    Stack(int maxSize = 10);
+    Stack(int maxSize = 50);
     virtual ~Stack();
     Stack(const Stack &other);
     Stack operator=(const Stack &other);

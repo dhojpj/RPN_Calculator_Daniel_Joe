@@ -22,7 +22,7 @@ template<typename T>
 class Queue
 {
 public:
-    Queue(unsigned int s = 10);
+    Queue(unsigned int s = 50);
     ~Queue();
     Queue(const Queue<T>& other);
     Queue<T>& operator=(const Queue<T>& other);

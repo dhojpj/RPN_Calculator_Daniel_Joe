@@ -111,19 +111,17 @@ void Parser::RPN()
             if (*(string*)q_temp->front()->v == "(")
             {
                 s_operators->push(q_temp->dequeue());
-
-                this->orderOfPrecedence();
-                this->poppingStackParentheses();
             }
+
+            this->orderOfPrecedence();
         }
-        else if (q_temp->front()->s == typeid(mixed*).name())
+        else
         {
             this->orderOfPrecedence();
         }
+
+        this->poppingStackAll();
     }
-    this->poppingStackAll();
-
-
 
 }
 
@@ -137,8 +135,8 @@ void Parser::orderOfPrecedence()
         {
             if (*(string*)q_temp->front()->v == ")")
             {
-                // get rid of the )
                 q_temp->dequeue();
+                this->poppingStackParentheses();
 
                 // stop loop, and function will proceed with the popping of stack operators
                 break;
@@ -146,13 +144,21 @@ void Parser::orderOfPrecedence()
             // not sure if this needs to be here...............
             else if(*(string*)q_temp->front()->v == "(")
             {
+                RPN();
                 break;
             }
 
             // order precedence
+            if (*(string*)q_temp->front()->v == "^")
+            {
+                s_operators->push(q_temp->dequeue());
+                q->enqueue(q_temp->dequeue());
+                q->enqueue(s_operators->pop());
+
+            }
             // if there's a +, and the stack is a *, then pop stack and enqueue, then push
             // otherwise push
-            if (*(string*)q_temp->front()->v == "+" || *(string*)q_temp->front()->v == "-")
+            else if (*(string*)q_temp->front()->v == "+" || *(string*)q_temp->front()->v == "-")
             {
                 // if stack not empty, compare
                 if (!s_operators->empty())
@@ -160,45 +166,41 @@ void Parser::orderOfPrecedence()
                     if(*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/")
                     {
                         q->enqueue(s_operators->pop());
-//                        cout << "order of operation\t" << *(string*)q->front()->v << endl;
                     }
                 }
 
                 s_operators->push(q_temp->dequeue());
-//                cout << "s_op+*\t" << *(string*)s_operators->peek()->v << endl;
             }
             else
             {
                 s_operators->push(q_temp->dequeue());
-
-//                cout << "s_op*\t" << *(string*)s_operators->peek()->v << endl;
             }
         }
         else if (q_temp->front()->s == typeid(mixed*).name())
         {
             q->enqueue(q_temp->dequeue());
-//            cout << "enq mixed\t" << *(mixed*)q->front()->v << endl;
         }
 
     }
 
 }
 
-
 void Parser::poppingStackParentheses()
 {
+
     while(!s_operators->empty())
     {
         if (*(string*)s_operators->peek()->v != "(")
         {
+//            cout << "pop not ( enq\t" << *(string*)s_operators->peek()->v << endl;
             q->enqueue(s_operators->pop());
         }
         else
         {
+//            cout << "pop ( but not enq\t" << *(string*)s_operators->pop()->v << endl;
             s_operators->pop();
             break;
         }
-
     }
 }
 
@@ -206,6 +208,7 @@ void Parser::poppingStackAll()
 {
     while(!s_operators->empty())
     {
+//        cout << "pop all\t" << *(string*)s_operators->peek()->v << endl;
         q->enqueue(s_operators->pop());
 
     }
@@ -242,8 +245,6 @@ void Parser::createToken(char *t)
 {
     twin *tw = new twin;
 
-//    cout << "t = \"" << t << "\"" << endl;
-
     // checking for operation and/or letter memory
     if (ispunct(t[0]) && t[1] == '\0')
     {
@@ -253,8 +254,6 @@ void Parser::createToken(char *t)
 
         tw->s = typeid(string*).name();
         tw->v = s_d;
-
-        cout << endl;
     }
     else // it's a number
     {
@@ -345,7 +344,6 @@ void Parser::printTempQueue()
 
 void Parser::printRPNQueue()
 {
-    cout << "printing rpn queue\n";
     while(!q->empty())
     {
         if(q->front()->s == typeid(string*).name())
