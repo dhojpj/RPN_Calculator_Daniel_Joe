@@ -54,7 +54,7 @@ private:
 //    void checkToken(char *t); // checks token, and returns where to push them
     void createToken(char *t);
 
-    void orderOfPrecedence(twin* tw);
+    void orderOfPrecedence();
     void copy(const Parser &p);
     void parse();
 };
@@ -91,44 +91,105 @@ void Parser::copy(const Parser &p)
 
 
 
-
+//sets up the order of precedence
 void Parser::RPN()
 {
-//    if(this =='(')
-//    {
-//        while (next != ')')
-//        {
-//            // push and pop; order of operations
-//            orderOfPrecedence(tw);
+    while(!q_temp->empty())
+    {
+        if(q_temp->front()->s == typeid(string*).name())
+        {
+            cout << "rpn if string\n";
+            if (*(string*)q_temp->front()->v == "(")
+            {
+                s_operators->push(q_temp->dequeue());
 
-//        }
-//    }
-//    else
-//    {
-//        orderOfPrecedence(tw);
-//    }
+                this->orderOfPrecedence();
+            }
+        }
+        else if (q_temp->front()->s == typeid(mixed*).name())
+        {
+            // call the function that takes in a normal expression
+                cout << "rpn else\n";
+            this->orderOfPrecedence();
+
+
+
+        }
+
+//        break;
+    }
+
 }
 
+
+
+
+
+
 // also enqueues
-void Parser::orderOfPrecedence(twin *tw)
+void Parser::orderOfPrecedence()
 {
-    cout << "checking order\n";
-
-    if(tw->s == typeid(string).name())
+    // it starts out with a number
+    while(!q_temp->empty())
     {
-//        cout << tw->s << endl;
-//        if(tw->v) // if order of precedes, then pop and push
-//            // also need my function pointer array
-        s_operators->push(tw);
-        // then enqueue
-    }
-    else if(tw->s == typeid(mixed*).name())
-    {
-//        cout << tw->s << endl;
-        s_numbers->push(tw);
+        cout << "starting while\n";
+        if (q_temp->front()->s == typeid(string*).name())
+        {
+            if (*(string*)q_temp->front()->v == ")")
+            {
+                // get rid of the )
+                // stop loop, and function will proceed with the popping of stack operators
+                q_temp->dequeue();
+                break;
+            }
+            // not sure if this needs to be here...............
+            else if(*(string*)q_temp->front()->v == "(")
+            {
+                break;
+            }
+
+            // order precedence
+            // if there's a +, and the stack is a *, then pop stack and enqueue, then push
+            // otherwise push
+            if (*(string*)q_temp->front()->v == "+" || *(string*)q_temp->front()->v == "-")
+            {
+                // if stack not empty, compare
+                if (!s_operators->empty())
+                {
+                    if(*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/")
+                    {
+                        q->enqueue(s_operators->pop());
+                    }
+                }
+
+                s_operators->push(q_temp->dequeue());
+            }
+            else
+            {
+                s_operators->push(q_temp->dequeue());
+            }
+        }
+        else if (q_temp->front()->s == typeid(mixed*).name())
+        {
+            q->enqueue(q_temp->dequeue());
+        }
+
     }
 
-//    q->enqueue(tw);
+    cout << "done first while\n";
+    while(!s_operators->empty())
+    {
+        cout << "popping stack\n";
+        if (*(string*)s_operators->peek()->v != "(")
+        {
+            q->enqueue(s_operators->pop());
+        }
+        else
+        {
+            s_operators->pop();
+        }
+
+    }
 }
 
 
@@ -244,28 +305,30 @@ void Parser::createToken(char *t)
     // initially the temporary queue stores the expressio
     // and from there the calculations are done
     q_temp->enqueue(tw);
-//    orderOfPrecedence(tw);
 }
 
 
 void Parser::printTempQueue()
 {
-    while(!q_temp->empty())
-    {
-        if(q_temp->front()->s == typeid(string*).name())
-        {
-            cout << (*(string*)q_temp->dequeue()->v)[0] << " ";
-        }
-        else if (q_temp->front()->s == typeid(mixed*).name())
-        {
-            cout << *(mixed*)q_temp->dequeue()->v << " ";
-        }
-    }
-    cout << endl;
+
+//    cout << "printing temp queue\n";
+//    while(!q_temp->empty())
+//    {
+//        if(q_temp->front()->s == typeid(string*).name())
+//        {
+//            cout << (*(string*)q_temp->dequeue()->v)[0] << " ";
+//        }
+//        else if (q_temp->front()->s == typeid(mixed*).name())
+//        {
+//            cout << *(mixed*)q_temp->dequeue()->v << " ";
+//        }
+//    }
+//    cout << endl;
 }
 
 void Parser::printRPNQueue()
 {
+    cout << "printing rpn queue\n";
     while(!q->empty())
     {
         if(q->front()->s == typeid(string*).name())

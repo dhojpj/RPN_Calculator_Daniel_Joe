@@ -40,11 +40,15 @@ int main()
 
     p->getInput();
 
-    p->printTempQueue();
-
     p->RPN();
 
     p->printRPNQueue();
+
+//    for (unsigned int i = 0; i <= 5; ++i)
+//    {
+////        cout << i << "\t" << (char)i << endl;
+//        cout << "!" << i << " = " << !i << endl;
+//    }
 
     return 0;
 }
