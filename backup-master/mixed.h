@@ -31,6 +31,10 @@ class mixed : public fraction
         void value(const fraction &x);
 
         void add(const mixed& y);
+        void subtract(const mixed& y);
+        void multiply(const mixed& y);
+        void divide(const mixed& y);
+        void raiseTo(const mixed& y);
 
 
 

@@ -86,10 +86,10 @@ Parser::Parser()
 //    fp = new functPtr[100];
 
     fp['+'] = &mixed::add;
-//    o['-'] = ;
-//    o['*'] = ;
-//    o['/'] = ;
-//    o['^'] = ;
+    fp['-'] = &mixed::subtract;
+    fp['*'] = &mixed::multiply;
+    fp['/'] = &mixed::divide;
+    fp['^'] = &mixed::raiseTo;
 
 }
 
@@ -402,27 +402,16 @@ void Parser::printRPNQueue()
         {
             cout << (*(string*)ptr->getData()->v)[0] << " ";
 
-
             twin *temp2 = s_numbers->pop();
 
-//            cout << "\ntemp2 = " << *(mixed*)temp2->v << endl;
+            twin *temp1 = s_numbers->pop();            
 
-            twin *temp1 = s_numbers->pop();
-
-//            cout << "\ntemp1 = " << *(mixed*)temp1->v << endl;
-
+                                    // call the function pointer
             ((*(mixed*)temp1->v).*fp[(*(string*)ptr->getData()->v)[0]])(*(mixed*)temp2->v);
-            // call the function pointer
-            // call a traverse function by function pointer
-            // this, dereference the pointer, and feed the parameters
 
-//            cout << "\ntemp1(2) = " << *(mixed*)temp1->v << endl;
 
-//                (this->*whatToDo[traverse])(root, out);
             s_numbers->push(temp1);
 
-//            s_numbers->push(*(mixed*)temp1->vfp[(*(string*)ptr->getData()->v)[0]]
-//                    (s_numbers->pop()););
         }
 
 
@@ -431,7 +420,7 @@ void Parser::printRPNQueue()
 //    cout << "\b";
 
 
-    cout << "= " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
+    cout << "\t= " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
 
 
 }

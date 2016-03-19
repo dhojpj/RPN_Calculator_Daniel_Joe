@@ -122,10 +122,32 @@ void mixed::add(const mixed &y)
 //    cout << "\nmixed added = " << *this << endl;
 
 }
-//void mixed::sub(const mixed &y){}
-//void mixed::multiply(const mixed &y){}
-//void mixed::divide(const mixed &y){}
-//void mixed::power(const mixed &y){}
+void mixed::subtract(const mixed &y)
+{
+    this->setValue(this->get_num() * y.get_denom() - y.get_num() * this->get_denom(),
+                   this->get_denom() * y.get_denom());
+    this->reduce();
+}
+
+void mixed::multiply(const mixed &y)
+{
+    this->setValue(this->get_num() * y.get_num(), this->get_denom() * y.get_denom());
+    this->reduce();
+}
+
+void mixed::divide(const mixed &y)
+{
+    this->setValue(this->get_num() * y.get_denom(), this->get_denom() * y.get_num());
+    this->reduce();
+}
+void mixed::raiseTo(const mixed &y)
+{
+    double power = (double)y.get_num() / y.get_denom();
+
+    this->setValue(pow(this->get_num(), power),
+                   pow(this->get_denom(), power));
+    this->reduce();
+}
 
 
 //mixed& add(const mixed &x, const mixed &y)
