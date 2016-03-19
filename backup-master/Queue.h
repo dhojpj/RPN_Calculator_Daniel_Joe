@@ -30,6 +30,7 @@ public:
     bool full();
     bool empty();
 
+    Node<T>* getHead();
     void setMaxSize(unsigned int m);
     unsigned int getMaxSize() const;
     unsigned int getSize() const;
@@ -97,6 +98,12 @@ template<typename T>
 bool Queue<T>::empty()
 {
     return !qty; // !0 means not false, which is true
+}
+
+template<typename T>
+Node<T>* Queue<T>::getHead()
+{
+    return head;
 }
 
 template<typename T>
@@ -269,9 +276,11 @@ ostream& operator<<(ostream& out, const Queue<R> &q)
 
     for(; ptr; ptr = ptr->nextNode())
     {
-//        out << ptr->getData() << endl;
-        out << ptr << "\t" << ptr->getData() << endl;
+        out << ptr->getData() << " ";
+//        out << ptr << "\t" << ptr->getData() << endl;
     }
+
+    out << "\b" << endl;
 
     return out;
 }

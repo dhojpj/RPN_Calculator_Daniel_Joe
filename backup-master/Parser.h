@@ -17,13 +17,17 @@ using std::ostream;
 using std::istream;
 
 //typedef mixed(mixed::*functPtr)(mixed,mixed);
-typedef void(mixed::*functPtr)(const mixed&);
+//typedef void(mixed::*functPtr)(const mixed&);
 
 
 
 class Parser
 {
 public:
+
+//    typedef mixed& (mixed::*functPtr)(mixed,mixed) const;
+
+    typedef void (mixed::*functPtr)(const mixed&);
 
     struct twin
     {
@@ -47,12 +51,15 @@ public:
     void poppingStackParentheses();
     void poppingStackAll();
 
+
+    void testRun();
+
     friend istream& operator>>(istream &in, Parser &p);
     friend ostream& operator<<(ostream &out, const Parser &p);
 
 private:
     char a[100]; // holds the c_string
-    functPtr *fp; // holds the operations
+    functPtr fp[100]; // holds the operations
 
     Stack<twin*> *s_numbers;
     Stack<twin*> *s_operators;
@@ -76,7 +83,7 @@ Parser::Parser()
     s_operators = new Stack<twin*>;
     q = new Queue<twin*>;
     q_temp = new Queue<twin*>;
-    fp = new functPtr[100];
+//    fp = new functPtr[100];
 
     fp['+'] = &mixed::add;
 //    o['-'] = ;
@@ -349,7 +356,8 @@ void Parser::printTempQueue()
 
 void Parser::printRPNQueue()
 {
-    while(!q->empty())
+
+/*    while(!q->empty())
     {
         if(q->front()->s == typeid(string*).name())
         {
@@ -368,6 +376,35 @@ void Parser::printRPNQueue()
     // print stack's answer
 
     cout << "= " << endl; // insert stack answer
+*/
+//    cout << "before\n";
+
+    Node<twin*> *ptr = q->getHead();
+
+    for(; ptr; ptr = ptr->nextNode())
+    {
+//        cout << "for\n";
+        if(ptr->getData()->s == typeid(string*).name())
+        {
+            cout << (*(string*)ptr->getData()->v)[0] << " ";
+//            twin *temp = s_numbers->pop();
+//            s_numbers->push(*(mixed*)s_numbers->pop()->v.fp[(*(string*)ptr->getData()->v)[0]]
+//                    (s_numbers->pop()););
+        }
+        else if (ptr->getData()->s == typeid(mixed*).name())
+        {
+            cout << *(mixed*)ptr->getData()->v << " ";
+//            s_numbers->push(ptr->getData());
+        }
+
+    }
+
+    cout << "\b\n\n";
+
+
+//    cout << "= " << endl; // insert stack answer
+
+
 }
 
 istream& operator>>(istream &in, Parser &p)
@@ -393,7 +430,10 @@ ostream& operator<<(ostream &out, const Parser &p)
 
 }
 
+void Parser::testRun()
+{
 
+}
 
 
 #endif // PARSER_H

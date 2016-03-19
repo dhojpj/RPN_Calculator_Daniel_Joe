@@ -115,16 +115,27 @@ istream& operator>>(istream& in, mixed &number)
 
 void mixed::add(const mixed &y)
 {
-
+    this->setValue(this->get_num() + y.get_denom(), this->get_num() + y.get_denom());
+    this->reduce();
 }
-void mixed::minus(const mixed &y){}
-void mixed::multiply(const mixed &y){}
-void mixed::divide(const mixed &y){}
-void mixed::power(const mixed &y){}
+//void mixed::sub(const mixed &y){}
+//void mixed::multiply(const mixed &y){}
+//void mixed::divide(const mixed &y){}
+//void mixed::power(const mixed &y){}
 
 
-//mixed add(const mixed &x, const mixed &y){}
-//mixed minus(const mixed &x, const mixed &y){}
-//mixed multiply(const mixed &x, const mixed &y){}
-//mixed divide(const mixed &x, const mixed &y){}
-//mixed power(const mixed &x, const mixed &y){}
+//mixed& add(const mixed &x, const mixed &y)
+//{
+//    mixed *m = new mixed;
+
+//    m->setValue(x.num + y.num, x.denom + y.denom);
+//    m->reduce();
+
+//    return m;
+//}
+
+
+mixed subtract(const mixed &x, const mixed &y){}
+mixed multiply(const mixed &x, const mixed &y){}
+mixed divide(const mixed &x, const mixed &y){}
+mixed power(const mixed &x, const mixed &y){}

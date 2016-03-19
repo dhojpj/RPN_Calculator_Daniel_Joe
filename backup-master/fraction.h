@@ -10,16 +10,14 @@
 
 enum FRACTION_ERRORS{ZERO_DENOM};
 
-
-//C
 using std::cout;
 using std::cin;
 using std::ostream;
 using std::istream;
 using std::endl;
 
-#include <string>
-#include <sstream>
+//#include <string>
+//#include <sstream>
 
 
 ///got this from the internet
@@ -68,11 +66,8 @@ public:
     fraction& operator^=(double other);
 
 
-    // need to remove the first const
     friend
     fraction operator+(const fraction &x, const fraction &y);
-
-//    fraction& operator+(const fraction &y);
 
     friend
     fraction operator-(const fraction &x, const fraction &y);
@@ -208,7 +203,7 @@ private:
     int gcd(int p, int q);
     void stringMethod(double x);
     void whileLoopMethod(double x);
-
+// nukem?
 
 };
 

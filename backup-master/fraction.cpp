@@ -4,28 +4,22 @@
 using namespace std;
 
 
-// constructor//?????????????????????????????????????????????????
+// constructor
 fraction::fraction(long n, int d)
 {
     setNum((int)n,d);
-//    int sign = 1;
-//    if(d == 0)
-//        throw ZERO_DENOM;
-//    denom < 0  ? sign = -1:sign = 1;
-//    denom = sign*d;
-//    num = sign*n;
+    this->reduce(); // why wasn't this here before?
 }
 
 // destructor
 fraction::~fraction()
 {
     num = 0;
-    denom = 1;
+    denom = 0;
 }
 
 fraction::fraction(int x)
 {
-
     num = x;
     denom = 1;
 }
@@ -42,20 +36,20 @@ fraction::fraction(double x)
     reduce();
 }
 
-
 fraction::fraction(const fraction &other)
 {
-    num = other.get_num();
-    denom = other.get_denom();
-    //copy(other);
+//    num = other.get_num();
+//    denom = other.get_denom();
+    copy(other);
 }
 
 fraction& fraction::operator=(const fraction &other)
 {
     if (this != &other)
     {
-        num = other.num;
-        denom = other.denom;
+        copy(other);
+//        num = other.num;
+//        denom = other.denom;
     }
     return *this;
 }
@@ -193,8 +187,6 @@ fraction& fraction::operator^=(double other)
     this->setValue(temp.get_num(),temp.get_denom());
     return *this;
 }
-
-
 
 void fraction::reduce()
 {
