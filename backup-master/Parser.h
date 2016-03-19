@@ -379,30 +379,59 @@ void Parser::printRPNQueue()
 */
 //    cout << "before\n";
 
+
+    /* get the function pointers working
+
+      -first make sure it's being called and popped
+      - switch to bools afterward
+
+    */
+
     Node<twin*> *ptr = q->getHead();
 
     for(; ptr; ptr = ptr->nextNode())
     {
-//        cout << "for\n";
-        if(ptr->getData()->s == typeid(string*).name())
-        {
-            cout << (*(string*)ptr->getData()->v)[0] << " ";
-//            twin *temp = s_numbers->pop();
-//            s_numbers->push(*(mixed*)s_numbers->pop()->v.fp[(*(string*)ptr->getData()->v)[0]]
-//                    (s_numbers->pop()););
-        }
-        else if (ptr->getData()->s == typeid(mixed*).name())
+        if (ptr->getData()->s == typeid(mixed*).name())
         {
             cout << *(mixed*)ptr->getData()->v << " ";
-//            s_numbers->push(ptr->getData());
+
+            // push onto stack
+            s_numbers->push((twin*)ptr->getData());
         }
+        else if(ptr->getData()->s == typeid(string*).name())
+        {
+            cout << (*(string*)ptr->getData()->v)[0] << " ";
+
+
+            twin *temp2 = s_numbers->pop();
+
+//            cout << "\ntemp2 = " << *(mixed*)temp2->v << endl;
+
+            twin *temp1 = s_numbers->pop();
+
+//            cout << "\ntemp1 = " << *(mixed*)temp1->v << endl;
+
+            ((*(mixed*)temp1->v).*fp[(*(string*)ptr->getData()->v)[0]])(*(mixed*)temp2->v);
+            // call the function pointer
+            // call a traverse function by function pointer
+            // this, dereference the pointer, and feed the parameters
+
+//            cout << "\ntemp1(2) = " << *(mixed*)temp1->v << endl;
+
+//                (this->*whatToDo[traverse])(root, out);
+            s_numbers->push(temp1);
+
+//            s_numbers->push(*(mixed*)temp1->vfp[(*(string*)ptr->getData()->v)[0]]
+//                    (s_numbers->pop()););
+        }
+
 
     }
 
-    cout << "\b\n\n";
+//    cout << "\b";
 
 
-//    cout << "= " << endl; // insert stack answer
+    cout << "= " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
 
 
 }

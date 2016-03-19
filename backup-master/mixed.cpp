@@ -115,8 +115,12 @@ istream& operator>>(istream& in, mixed &number)
 
 void mixed::add(const mixed &y)
 {
-    this->setValue(this->get_num() + y.get_denom(), this->get_num() + y.get_denom());
+    this->setValue(this->get_num() * y.get_denom() + y.get_num() * this->get_denom(),
+                   this->get_denom() * y.get_denom());
     this->reduce();
+
+//    cout << "\nmixed added = " << *this << endl;
+
 }
 //void mixed::sub(const mixed &y){}
 //void mixed::multiply(const mixed &y){}
