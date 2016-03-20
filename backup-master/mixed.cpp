@@ -122,8 +122,8 @@ istream& operator>>(istream& in, mixed &number)
 
 void mixed::add(const mixed &y)
 {
-    this->setValue(this->get_num() * y.get_denom() + y.get_num() * this->get_denom(),
-                   this->get_denom() * y.get_denom());
+    this->setValue((double)this->get_num() * (double)y.get_denom() + (double)y.get_num() * (double)this->get_denom(),
+                   (double)this->get_denom() * (double)y.get_denom());
     this->reduce();
 
 //    cout << "\nmixed added = " << *this << endl;
@@ -131,20 +131,20 @@ void mixed::add(const mixed &y)
 }
 void mixed::subtract(const mixed &y)
 {
-    this->setValue(this->get_num() * y.get_denom() - y.get_num() * this->get_denom(),
-                   this->get_denom() * y.get_denom());
+    this->setValue((double)this->get_num() * y.get_denom() - (double)y.get_num() * (double)this->get_denom(),
+                   (double)this->get_denom() * (double)y.get_denom());
     this->reduce();
 }
 
 void mixed::multiply(const mixed &y)
 {
-    this->setValue(this->get_num() * y.get_num(), this->get_denom() * y.get_denom());
+    this->setValue((double)this->get_num() * (double)y.get_num(), (double)this->get_denom() * (double)y.get_denom());
     this->reduce();
 }
 
 void mixed::divide(const mixed &y)
 {
-    this->setValue(this->get_num() * y.get_denom(), this->get_denom() * y.get_num());
+    this->setValue((double)this->get_num() * (double)y.get_denom(), (double)this->get_denom() * (double)y.get_num());
     this->reduce();
 }
 void mixed::raiseTo(const mixed &y)

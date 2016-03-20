@@ -115,10 +115,9 @@ Parser::~Parser(){	}
 //}
 
 
-//sets up the order of precedence for the queue
+//sets up the order of precedence
 void Parser::RPN()
 {
-    // the q_temp contains the algebraic expression
     while(!q_temp->empty())
     {
         if(q_temp->front()->s == typeid(string*).name())
@@ -129,9 +128,8 @@ void Parser::RPN()
             }
 
             this->orderOfPrecedence(); // proceed to the rest of the code
-//            this->poppingStackParentheses();
+            this->poppingStackParentheses();
         }
-        // else, it's a number/mixed object
         else
         {
             this->orderOfPrecedence();
@@ -139,7 +137,6 @@ void Parser::RPN()
 
         this->poppingStackAll();
     }
-
 
 }
 
@@ -174,32 +171,16 @@ void Parser::orderOfPrecedence()
                 q->enqueue(s_operators->pop());
 
             }
-            // if there's a +, and the stack is a *,/,-, then pop stack and enqueue, then push
-            // (because - is not commutative)
-            else if (*(string*)q_temp->front()->v == "+")
+            // if there's a +, and the stack is a *, then pop stack and enqueue, then push
+            // otherwise push
+
+            // this need to fix left to right+++++++++++++++++++++++++++++++++++++
+            else if (*(string*)q_temp->front()->v == "+" || *(string*)q_temp->front()->v == "-")
             {
                 // if stack not empty, compare
                 if (!s_operators->empty())
                 {
-                    while(*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/")
-                    {
-                        q->enqueue(s_operators->pop());
-                    }
-                    while (!s_operators->empty() && *(string*)s_operators->peek()->v == "-")
-                    {
-                        q->enqueue(s_operators->pop());
-                    }
-
-                }
-
-                s_operators->push(q_temp->dequeue());
-            }
-            else if (*(string*)q_temp->front()->v == "-")
-            {
-                // if stack not empty, compare
-                if (!s_operators->empty())
-                {
-                    while(*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/")
+                    if(*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/")
                     {
                         q->enqueue(s_operators->pop());
                     }
@@ -207,14 +188,17 @@ void Parser::orderOfPrecedence()
 
                 s_operators->push(q_temp->dequeue());
             }
-            else // it's a * or -
+            else
             {
                 s_operators->push(q_temp->dequeue());
             }
         }
-        else// it's a mixed object
+        else// if (q_temp->front()->s == typeid(mixed*).name())
         {
+//            cout << "q_temp front = " << *(mixed*)q_temp->front()->v << endl;
             q->enqueue(q_temp->dequeue());
+
+//            cout << "q tail = " << *(mixed*)q->back()->v << endl;
         }
 
     }
@@ -503,19 +487,17 @@ void Parser::printRPNQueue()
         }
         else// if(ptr->getData()->s == typeid(string*).name())
         {
-//            cout << (*(string*)ptr->getData()->v)[0] << " ";
-
-            cout << "\nop\t" << (*(string*)ptr->getData()->v)[0] << " ";
+            cout << (*(string*)ptr->getData()->v)[0] << " ";
 
             twin *temp2 = s_numbers->pop();
             twin *temp1 = s_numbers->pop();
 
-            cout << "\ntemp1 = " << *(mixed*)temp1->v << endl;
-            cout << "temp2 = " << *(mixed*)temp2->v << endl;
+//            cout << "\ntemp1 = " << *(mixed*)temp1->v << endl;
+//            cout << "temp2 = " << *(mixed*)temp2->v << endl;
                                     // call the function pointer
             ((*(mixed*)temp1->v).*fp[(*(string*)ptr->getData()->v)[0]])(*(mixed*)temp2->v);
 
-                        cout << "temp1(2) = " << *(mixed*)temp1->v << endl;
+//                        cout << "temp1(2) = " << *(mixed*)temp1->v << endl;
             s_numbers->push(temp1);
 
         }
