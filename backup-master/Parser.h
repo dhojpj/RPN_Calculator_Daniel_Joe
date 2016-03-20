@@ -505,10 +505,16 @@ void Parser::printRPNQueue()
 
     }
 
-//    cout << "\b";
+    cout << "\t";
 
+    // printing in double
+    if ((*(mixed*)s_numbers->peek()->v).get_denom() > 1)
+    {
+        cout << " = " << (double)(*(mixed*)s_numbers->peek()->v).get_num()
+                /(double)(*(mixed*)s_numbers->peek()->v).get_denom();
+    }
 
-    cout << "\t= " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
+    cout << " = " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
 
 
 }
