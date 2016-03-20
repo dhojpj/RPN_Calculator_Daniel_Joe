@@ -127,7 +127,7 @@ void Parser::RPN()
                 s_operators->push(q_temp->dequeue());
             }
 
-            this->orderOfPrecedence();
+            this->orderOfPrecedence(); // proceed to the rest of the code
             this->poppingStackParentheses();
         }
         else
@@ -146,14 +146,15 @@ void Parser::orderOfPrecedence()
     // it starts out with a number
     while(!q_temp->empty())
     {
+        // if it's an operator, do this
         if (q_temp->front()->s == typeid(string*).name())
         {
             if (*(string*)q_temp->front()->v == ")")
             {
                 q_temp->dequeue();
-                this->poppingStackParentheses();
+                this->poppingStackParentheses(); // pops stack until the (
 
-                // stop loop, and function will proceed with the popping of stack operators
+                // stop loop
                 break;
             }
             else if(*(string*)q_temp->front()->v == "(")
@@ -172,6 +173,8 @@ void Parser::orderOfPrecedence()
             }
             // if there's a +, and the stack is a *, then pop stack and enqueue, then push
             // otherwise push
+
+            // this need to fix left to right+++++++++++++++++++++++++++++++++++++
             else if (*(string*)q_temp->front()->v == "+" || *(string*)q_temp->front()->v == "-")
             {
                 // if stack not empty, compare
@@ -190,9 +193,12 @@ void Parser::orderOfPrecedence()
                 s_operators->push(q_temp->dequeue());
             }
         }
-        else if (q_temp->front()->s == typeid(mixed*).name())
+        else// if (q_temp->front()->s == typeid(mixed*).name())
         {
+//            cout << "q_temp front = " << *(mixed*)q_temp->front()->v << endl;
             q->enqueue(q_temp->dequeue());
+
+//            cout << "q tail = " << *(mixed*)q->back()->v << endl;
         }
 
     }
@@ -264,7 +270,6 @@ void Parser::parse()
 void Parser::createToken(char *t)
 {
     twin *tw = new twin;
-//    cout << "token = " << t << endl;
 
     // checking for operator that's a char (really a string because better to work with)
     if (ispunct(t[0]) && t[1] == '\0')
@@ -313,12 +318,12 @@ void Parser::createToken(char *t)
                 string fractNum = fract.substr(0,i+1);
                 string fractDenom = fract.substr(i+2, fract.length());
 
-                cout << "num = " << fractNum << "\tdenom = " << fractDenom << endl;
+//                cout << "num = " << fractNum << "\tdenom = " << fractDenom << endl;
 
                 // making a mixed number
                 if (q_temp->back()->s == typeid(mixed*).name())
                 {
-                    cout << "if whole #\t" << q_temp->front()->s << "\n";
+//                    cout << "if whole #\n";// << q_temp->back()->s << "\n";
 //                    cout << "q front 7= " << *(mixed*)q_temp->front()->v << endl;
                     fraction f_temp;
                     f_temp.setValue(atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
@@ -328,16 +333,20 @@ void Parser::createToken(char *t)
 
                     tw = q_temp->dequeue_behind();
 
+//                    cout << "temp deq'ed\n";
                     (*(mixed*)tw->v) += f_temp;
+//                    cout << "mix incr'ed\n";
+
+//                    cout << "mixed = " << *(mixed*)tw->v << endl;
 
                 }
                 else
                 {
-                    cout << "just pure fract\n";
+//                    cout << "just pure fract\n";
 
                     mixed *m = new mixed(0, atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
 
-                    cout << "m = " << *m << endl;
+//                    cout << "m = " << *m << endl;
 //                    tw = new twin;
                     tw->s = typeid(mixed*).name();
                     tw->v = m;
@@ -359,7 +368,7 @@ void Parser::createToken(char *t)
         // if it traversed through, then it's an integer
         if (isInt)
         {
-            cout << "int\n";
+//            cout << "int\n";
             int i = atoi(t);
 
             mixed *m = new mixed(i,0,1);
@@ -373,14 +382,16 @@ void Parser::createToken(char *t)
 
     }
 
+
+//    cout << "before enq\t";
     q_temp->enqueue(tw);
 
-    if (tw->s == typeid(string*).name())
-    {
-        cout << "enq'ed = " << *(string*)tw->v << endl;
-    }
-    else
-        cout << "enq'ed = " << *(mixed*)tw->v << endl;
+//    if (tw->s == typeid(string*).name())
+//    {
+//        cout << "post enq'ed = " << *(string*)q_temp->back()->v << endl;
+//    }
+//    else
+//        cout << "post enq'ed = " << *(mixed*)q_temp->back()->v << endl;
 
 
 
@@ -392,6 +403,7 @@ void Parser::createToken(char *t)
 
 void Parser::printTempQueue()
 {
+    cout << "printing temp q\t";
     Node<twin*> *ptr = q_temp->getHead();
 
     for(; ptr; ptr = ptr->nextNode())
@@ -461,6 +473,7 @@ void Parser::printRPNQueue()
 
     */
 
+//    cout << "printing Q\n";
     Node<twin*> *ptr = q->getHead();
 
     for(; ptr; ptr = ptr->nextNode())
@@ -472,18 +485,19 @@ void Parser::printRPNQueue()
             // push onto stack
             s_numbers->push((twin*)ptr->getData());
         }
-        else if(ptr->getData()->s == typeid(string*).name())
+        else// if(ptr->getData()->s == typeid(string*).name())
         {
             cout << (*(string*)ptr->getData()->v)[0] << " ";
 
             twin *temp2 = s_numbers->pop();
+            twin *temp1 = s_numbers->pop();
 
-            twin *temp1 = s_numbers->pop();            
-
+//            cout << "\ntemp1 = " << *(mixed*)temp1->v << endl;
+//            cout << "temp2 = " << *(mixed*)temp2->v << endl;
                                     // call the function pointer
             ((*(mixed*)temp1->v).*fp[(*(string*)ptr->getData()->v)[0]])(*(mixed*)temp2->v);
 
-
+//                        cout << "temp1(2) = " << *(mixed*)temp1->v << endl;
             s_numbers->push(temp1);
 
         }

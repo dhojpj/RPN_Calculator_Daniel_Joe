@@ -225,7 +225,15 @@ T Queue<T>::dequeue_behind()
 
     T d = tail->getData();
 
-    tail = tail->nextNode();
+    Node<T> *ptr = head;
+
+    // must traverse through queue and find node right before the tail
+    for(; ptr && ptr->nextNode() != tail; ptr = ptr->nextNode());
+
+//    cout << "tail before = " << tail << endl;
+    tail = ptr;
+
+//    cout << "tail after = " << tail << endl;
 
     --qty;
 
