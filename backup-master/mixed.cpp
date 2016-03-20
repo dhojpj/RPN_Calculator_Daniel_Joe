@@ -68,8 +68,15 @@ mixed::~mixed()
 
 void mixed::value(int w, int n, int d)
 {
-    int sign = (w<0 || n < 0) ? -1:1; // check the sign of the while number and store for next line
+//    int sign = (w<0 || n < 0) ? -1:1; // check the sign of the while number and store for next line
+//    int sign = n < 0 ? -1:1; // check the sign of the while number and store for next line
+//    whole = sign*w;
+//    this->setValue(sign*(abs(w*d)+abs(n)),d);
+//    cout << "mixed value\n";
+
+    int sign = (w<0 || n < 0) ? -1:1;
     this->setValue(sign*(abs(w*d)+abs(n)),d);
+
 }
 
 
@@ -150,18 +157,7 @@ void mixed::raiseTo(const mixed &y)
 }
 
 
-//mixed& add(const mixed &x, const mixed &y)
+//int mixed::getWholeNumber()
 //{
-//    mixed *m = new mixed;
-
-//    m->setValue(x.num + y.num, x.denom + y.denom);
-//    m->reduce();
-
-//    return m;
+//    return whole;
 //}
-
-
-mixed subtract(const mixed &x, const mixed &y){}
-mixed multiply(const mixed &x, const mixed &y){}
-mixed divide(const mixed &x, const mixed &y){}
-mixed power(const mixed &x, const mixed &y){}

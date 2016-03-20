@@ -42,6 +42,7 @@ int main()
 
     p->RPN();
 
+//    p->printTempQueue();
     p->printRPNQueue();
 
     return 0;

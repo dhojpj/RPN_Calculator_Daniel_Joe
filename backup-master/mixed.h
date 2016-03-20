@@ -30,6 +30,8 @@ class mixed : public fraction
         void value(double x);
         void value(const fraction &x);
 
+//        int getWholeNumber();
+
         void add(const mixed& y);
         void subtract(const mixed& y);
         void multiply(const mixed& y);
@@ -52,6 +54,7 @@ class mixed : public fraction
 
     private:
 
+//        int whole;
 
 };
 
