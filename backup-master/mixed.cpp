@@ -149,7 +149,7 @@ void mixed::divide(const mixed &y)
 }
 void mixed::raiseTo(const mixed &y)
 {
-    double power = (double)y.get_num() / y.get_denom();
+    double power = (double)y.get_num() / (double)y.get_denom();
 
     this->setValue(pow(this->get_num(), power),
                    pow(this->get_denom(), power));

@@ -263,24 +263,28 @@ void Parser::parse()
 //enqueues the struct twin into the temp queue to be read from
 void Parser::createToken(char *t)
 {
-    twin *tw;
+    twin *tw = new twin;
 //    cout << "token = " << t << endl;
 
     // checking for operator that's a char (really a string because better to work with)
     if (ispunct(t[0]) && t[1] == '\0')
     {
+
         // need to create data and enqueue it
         string *s_d = new string;
         *s_d = (string)t;
 
-        tw = new twin;
+//        tw = new twin;
         tw->s = typeid(string*).name();
         tw->v = s_d;
+
+
+
     }
     else // it's a number
     {
-        bool isInt = true;
-        for (unsigned int i = 0; t[i] != '\0'; ++i)
+        bool isInt = true, done = false;
+        for (unsigned int i = 0; t[i] != '\0' && !done; ++i)
         {
             // double
             if (isdigit(t[i]) && t[i+1] == '.')
@@ -289,7 +293,7 @@ void Parser::createToken(char *t)
                 double d;// = new double;
                 ss >> d;
 
-                tw = new twin;
+//                tw = new twin;
                 tw->s = typeid(mixed*).name();
 
                 mixed *m = new mixed;
@@ -297,6 +301,9 @@ void Parser::createToken(char *t)
                 *m = d;
 
                 tw->v = m;
+
+                isInt = false;
+                done = true;
             }
             // fraction
             else if (isdigit(t[i]) && t[i+1] == '/')
@@ -306,36 +313,47 @@ void Parser::createToken(char *t)
                 string fractNum = fract.substr(0,i+1);
                 string fractDenom = fract.substr(i+2, fract.length());
 
-                if (q_temp->front()->s == typeid(mixed*).name())
+                cout << "num = " << fractNum << "\tdenom = " << fractDenom << endl;
+
+                // making a mixed number
+                if (q_temp->back()->s == typeid(mixed*).name())
                 {
-                    cout << "if whole #\n";
+                    cout << "if whole #\t" << q_temp->front()->s << "\n";
+//                    cout << "q front 7= " << *(mixed*)q_temp->front()->v << endl;
                     fraction f_temp;
                     f_temp.setValue(atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
 
-                    tw = q_temp->dequeue();
+                    delete tw;
+                    tw = NULL;
+
+                    tw = q_temp->dequeue_behind();
 
                     (*(mixed*)tw->v) += f_temp;
 
-//                    cout << "mixed = " << *(mixed*)q_temp->front()->v << endl;
-                            //(atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
                 }
                 else
                 {
-                    cout << "just pure fract\n";// << q_temp->front()->s.name() <<"\n";
+                    cout << "just pure fract\n";
 
                     mixed *m = new mixed(0, atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
 
-                    tw = new twin;
+                    cout << "m = " << *m << endl;
+//                    tw = new twin;
                     tw->s = typeid(mixed*).name();
                     tw->v = m;
                 }
 
+                isInt = false;
+                done = true;
+
             }
             // otherwise nothing ?
-            else if (!isdigit(t[i]))
-            {
-                isInt = false;
-            }
+//            else if (!isdigit(t[i]))
+//            {
+//                isInt = false;
+//                done = true;
+//            }
+//            cout << "mixed = " << *(mixed*)q_temp->front()->v << endl;
 
         }
         // if it traversed through, then it's an integer
@@ -346,7 +364,7 @@ void Parser::createToken(char *t)
 
             mixed *m = new mixed(i,0,1);
 
-            tw = new twin;
+//            tw = new twin;
             tw->s = typeid(mixed*).name();
             tw->v = m;
 
@@ -355,8 +373,20 @@ void Parser::createToken(char *t)
 
     }
 
-    cout << "done\n";
     q_temp->enqueue(tw);
+
+    if (tw->s == typeid(string*).name())
+    {
+        cout << "enq'ed = " << *(string*)tw->v << endl;
+    }
+    else
+        cout << "enq'ed = " << *(mixed*)tw->v << endl;
+
+
+
+
+//    cout << "temp queueue = ";
+//    this->printTempQueue();
 }
 
 

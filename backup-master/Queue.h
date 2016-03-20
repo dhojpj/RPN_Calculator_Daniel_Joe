@@ -41,6 +41,7 @@ public:
     Queue<T>& operator>>(T& data); // return a queue to chain it
     void enqueue(const T& data); // starting at the tail
     T dequeue();
+    T dequeue_behind();
     T front() const; // so can't change it and won't fire a copy constructor // how??
     T back() const;
 
@@ -213,6 +214,23 @@ T Queue<T>::dequeue()
     return d;
 }
 
+// starting at the head
+template<typename T>
+T Queue<T>::dequeue_behind()
+{
+    if(this->empty())
+    {
+        throw QUEUE_EMPTY;
+    }
+
+    T d = tail->getData();
+
+    tail = tail->nextNode();
+
+    --qty;
+
+    return d;
+}
 
 
 template<typename T>
