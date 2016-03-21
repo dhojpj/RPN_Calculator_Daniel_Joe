@@ -122,28 +122,13 @@ void Parser::RPN()
     // the q_temp contains the algebraic expression
     while(!q_temp->empty())
     {
-//        if(q_temp->front()->s == typeid(string*).name())
-//        {
-//            if (*(string*)q_temp->front()->v == "(")
-//            {
-//            }
 
-            this->orderOfPrecedence(); // proceed to the rest of the code
-//            this->poppingStackParentheses();
-//        }
-        // else, it's a number/mixed object
-//        else
-//        {
-//            this->orderOfPrecedence();
-//        }
-
-
+        this->orderOfPrecedence(); // proceed to the rest of the code
     }
-        this->poppingStackAll();
-
+    this->poppingStackAll(); // gets the last operator
 }
 
-// also enqueues
+// PEMDAS
 void Parser::orderOfPrecedence()
 {
     // it starts out with a number
@@ -185,33 +170,23 @@ void Parser::orderOfPrecedence()
                 q->enqueue(s_operators->pop());
 
             }
-
             // (M)ultiplication && (D)ivide (left to right)
             else if (*(string*)q_temp->front()->v == "*" || *(string*)q_temp->front()->v == "/")
             {
+                // swap
                 if (!s_operators->empty() &&
                         (*(string*)s_operators->peek()->v == "*"
                          || *(string*)s_operators->peek()->v == "/"))
                 {
-                    // swap
                     q->enqueue(s_operators->pop());
                 }
 
                 s_operators->push(q_temp->dequeue());
-
-
-//                s_operators->push(q_temp->dequeue());
-            }
-            // if there's a +, and the stack is a *,/,-, then pop stack and enqueue, then push
-            // (because - is not commutative)
-
+            } // else if (* || /)
             // (A)ddition && (S)ubstraction (left to right)
             else if (*(string*)q_temp->front()->v == "+" || *(string*)q_temp->front()->v == "-")
             {
-//                cout << "*(string*)q_temp->front()->v = " << *(string*)q_temp->front()->v << endl;
-                // if stack not empty, compare
-//                if (!s_operators->empty())
-//                {
+                // needs to be a while loop otherwise errors
                 while( !s_operators->empty() &&
                       (*(string*)s_operators->peek()->v == "*" ||
                        *(string*)s_operators->peek()->v == "/" ||
@@ -220,48 +195,14 @@ void Parser::orderOfPrecedence()
                 {
                     q->enqueue(s_operators->pop());
                 }
-//                if (!s_operators->empty() &&
-//                        (*(string*)s_operators->peek()->v == "-"
-//                         || *(string*)s_operators->peek()->v == "+"))
-//                {
-                    // swap
-//                        q->enqueue(s_numbers->pop());
-//                    q->enqueue(s_operators->pop());
-//                                        s_operators->push(q_temp->dequeue());
-//                }
-
-//                }
-
                 s_operators->push(q_temp->dequeue());
-//            }
-//            else if (*(string*)q_temp->front()->v == "-")
-//            {
-////                // if stack not empty, compare
-////                if (!s_operators->empty())
-////                {
-//                    while(!s_operators->empty() && (*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/"))
-//                       /*   || *(string*)s_operators->peek()->v == "+")*/
-//                    {
-//                        q->enqueue(s_operators->pop());
-//                    }
-////                }
-//                    if (!s_operators->empty() && *(string*)s_operators->peek()->v == "+")
-//                    {
-//                        // swap
-////                        q->enqueue(s_numbers->pop());
-//                        q->enqueue(s_operators->pop());
-////                                        s_operators->push(q_temp->dequeue());
-//                    }
+            } // else if (+ || -)
 
+        } // else if (string*)
 
-//                s_operators->push(q_temp->dequeue());
-            }
+    } // while (!empty)
 
-        }
-
-    }
-
-}
+}// orderOfPrecedence
 
 void Parser::poppingStackParentheses()
 {
@@ -279,31 +220,20 @@ void Parser::poppingStackParentheses()
         }
     }
 
-//    while (*(string*)s_operators->peek()->v != "(")
-//    {
-//        q->enqueue(s_operators->pop());
-//    }
-
-//    s_operators->pop();
 }
 
 void Parser::poppingStackAll()
 {
     while(!s_operators->empty())
     {
-//        cout << "pop all\t" << *(string*)s_operators->peek()->v << endl;
         q->enqueue(s_operators->pop());
-
     }
 }
-
-
 
 void Parser::nukem()
 {
 
     memset(a, 0, 255);
-//    a = NULL;
 
     q->clear();
     q_temp->clear();
@@ -458,18 +388,6 @@ void Parser::createToken(char *t)
 //    cout << "before enq\t";
     q_temp->enqueue(tw);
 
-//    if (tw->s == typeid(string*).name())
-//    {
-//        cout << "post enq'ed = " << *(string*)q_temp->back()->v << endl;
-//    }
-//    else
-//        cout << "post enq'ed = " << *(mixed*)q_temp->back()->v << endl;
-
-
-
-
-//    cout << "temp queueue = ";
-//    this->printTempQueue();
 }
 
 
