@@ -222,7 +222,7 @@ void Parser::poppingStackAll()
 void Parser::nukem()
 {
 
-    memset(a, 0, 255);
+    memset(a, 0, 100);
 
     q->clear();
     q_temp->clear();
@@ -236,9 +236,12 @@ void Parser::getInput()
     cout << "Expression: ";
     cin.getline(a, 100);
 
-    if(string(a).size() == 0)
+    if(string(a).size() == 0 ||
+            string(a) == "QUIT" || string(a)== "quit" ||
+            string(a) == "EXIT" || string(a) == "exit")
     {
-        exit(0);
+        cout << endl;
+        exit(1);
     }
 
     this->parse();
@@ -352,6 +355,7 @@ void Parser::printRPNQueue()
 
     for(; ptr; ptr = ptr->nextNode())
     {
+//        cout << "printing\n";
         // calling a function pointer depending if it's bool false/true (i.e. mixed/operator)
         (this->*pp[ptr->getData()->b])(ptr);
     }

@@ -34,13 +34,16 @@ void setMemory(mixed memory[], int size, int pos, mixed data);
 
 int main()
 {
-    cout << "This program takes an algebraic expression,\nand translates it into Reverse Polish Notation\n\n";
+    cout << "This program takes an algebraic expression,\nand translates it into Reverse Polish Notation"
+            << endl << "Make sure to leave spaces in between expressions"
+             << endl << "(press return or type 'exit' or 'quit' to leave program)\n\n";
 
-    char ans = 'y';
+//    char ans = 'y';
+    bool contd = true;
     Parser *p = new Parser;
 
 
-    while (ans == 'y')
+    while (contd)
     {
 
         p->getInput();
@@ -48,12 +51,6 @@ int main()
         p->RPN();
 
         p->printRPNQueue();
-
-        cout << "\nContinue? (y/n)  ";
-        cin >> ans;
-        cin.ignore();
-
-        ans = tolower(ans);
 
         cout << endl;
     }
