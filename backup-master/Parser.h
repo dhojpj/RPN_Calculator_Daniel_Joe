@@ -121,25 +121,24 @@ void Parser::RPN()
     // the q_temp contains the algebraic expression
     while(!q_temp->empty())
     {
-        if(q_temp->front()->s == typeid(string*).name())
-        {
-            if (*(string*)q_temp->front()->v == "(")
-            {
-                s_operators->push(q_temp->dequeue());
-            }
+//        if(q_temp->front()->s == typeid(string*).name())
+//        {
+//            if (*(string*)q_temp->front()->v == "(")
+//            {
+//            }
 
             this->orderOfPrecedence(); // proceed to the rest of the code
 //            this->poppingStackParentheses();
-        }
+//        }
         // else, it's a number/mixed object
-        else
-        {
-            this->orderOfPrecedence();
-        }
+//        else
+//        {
+//            this->orderOfPrecedence();
+//        }
 
-        this->poppingStackAll();
+
     }
-
+        this->poppingStackAll();
 
 }
 
@@ -149,10 +148,25 @@ void Parser::orderOfPrecedence()
     // it starts out with a number
     while(!q_temp->empty())
     {
-        // if it's an operator, do this
-        if (q_temp->front()->s == typeid(string*).name())
+        // it's a mixed object
+        if (q_temp->front()->s == typeid(mixed*).name())
         {
-            if (*(string*)q_temp->front()->v == ")")
+            q->enqueue(q_temp->dequeue());
+        }
+        // if it's an operator, do this
+        else if (q_temp->front()->s == typeid(string*).name())
+        {
+
+            // PEMDAS
+
+            // (P)arentheses
+            if(*(string*)q_temp->front()->v == "(")
+            {
+                s_operators->push(q_temp->dequeue());
+                orderOfPrecedence(); // recursive
+                break;
+            }
+            else if (*(string*)q_temp->front()->v == ")")
             {
                 q_temp->dequeue();
                 this->poppingStackParentheses(); // pops stack until the (
@@ -160,12 +174,8 @@ void Parser::orderOfPrecedence()
                 // stop loop
                 break;
             }
-            else if(*(string*)q_temp->front()->v == "(")
-            {
-                RPN();
-                break;
-            }
 
+            // (E)xponents
             // order precedence
             if (*(string*)q_temp->front()->v == "^")
             {
@@ -174,47 +184,71 @@ void Parser::orderOfPrecedence()
                 q->enqueue(s_operators->pop());
 
             }
+
+            // (M)ultiplication && (D)ivide (left to right)
+            else if (*(string*)q_temp->front()->v == "*" || *(string*)q_temp->front()->v == "/")
+            {
+                if (!s_operators->empty() &&
+                        (*(string*)s_operators->peek()->v == "*"
+                         || *(string*)s_operators->peek()->v == "/"))
+                {
+                    // swap
+                    q->enqueue(s_operators->pop());
+                }
+
+                s_operators->push(q_temp->dequeue());
+            }
             // if there's a +, and the stack is a *,/,-, then pop stack and enqueue, then push
             // (because - is not commutative)
-            else if (*(string*)q_temp->front()->v == "+")
-            {
-                // if stack not empty, compare
-                if (!s_operators->empty())
-                {
-                    while(*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/")
-                    {
-                        q->enqueue(s_operators->pop());
-                    }
-                    while (!s_operators->empty() && *(string*)s_operators->peek()->v == "-")
-                    {
-                        q->enqueue(s_operators->pop());
-                    }
 
+            // (A)ddition && (S)ubstraction (left to right)
+            else if (*(string*)q_temp->front()->v == "+" || *(string*)q_temp->front()->v == "-")
+            {
+//                cout << "*(string*)q_temp->front()->v = " << *(string*)q_temp->front()->v << endl;
+                // if stack not empty, compare
+//                if (!s_operators->empty())
+//                {
+                while(!s_operators->empty() && (*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/"))
+                {
+                    q->enqueue(s_operators->pop());
+                }
+                if (!s_operators->empty() &&
+                        (*(string*)s_operators->peek()->v == "-"
+                         || *(string*)s_operators->peek()->v == "+"))
+                {
+                    // swap
+//                        q->enqueue(s_numbers->pop());
+                    q->enqueue(s_operators->pop());
+//                                        s_operators->push(q_temp->dequeue());
                 }
 
-                s_operators->push(q_temp->dequeue());
-            }
-            else if (*(string*)q_temp->front()->v == "-")
-            {
-                // if stack not empty, compare
-                if (!s_operators->empty())
-                {
-                    while(*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/")
-                    {
-                        q->enqueue(s_operators->pop());
-                    }
-                }
+//                }
 
                 s_operators->push(q_temp->dequeue());
+//            }
+//            else if (*(string*)q_temp->front()->v == "-")
+//            {
+////                // if stack not empty, compare
+////                if (!s_operators->empty())
+////                {
+//                    while(!s_operators->empty() && (*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/"))
+//                       /*   || *(string*)s_operators->peek()->v == "+")*/
+//                    {
+//                        q->enqueue(s_operators->pop());
+//                    }
+////                }
+//                    if (!s_operators->empty() && *(string*)s_operators->peek()->v == "+")
+//                    {
+//                        // swap
+////                        q->enqueue(s_numbers->pop());
+//                        q->enqueue(s_operators->pop());
+////                                        s_operators->push(q_temp->dequeue());
+//                    }
+
+
+//                s_operators->push(q_temp->dequeue());
             }
-            else // it's a * or -
-            {
-                s_operators->push(q_temp->dequeue());
-            }
-        }
-        else// it's a mixed object
-        {
-            q->enqueue(q_temp->dequeue());
+
         }
 
     }
@@ -454,42 +488,6 @@ void Parser::printTempQueue()
 
 void Parser::printRPNQueue()
 {
-
-
-
-
-
-/*    while(!q->empty())
-    {
-        if(q->front()->s == typeid(string*).name())
-        {
-            cout << (*(string*)q->dequeue()->v)[0] << " ";
-//            cout << (*(string*)q->front()->v)[0] << " ";
-//            twin *tw_temp = s_numbers->pop(); // to store it
-//            (*(mixed*)s_numbers->pop()->v).(fp[(*(string*)q->dequeue()->v)[0]](*(mixed*)tw_temp->v));
-//                    << " ";
-        }
-        else if (q->front()->s == typeid(mixed*).name())
-        {
-            cout << *(mixed*)q->dequeue()->v << " ";
-        }
-    }
-
-    // print stack's answer
-
-    cout << "= " << endl; // insert stack answer
-*/
-//    cout << "before\n";
-
-
-    /* get the function pointers working
-
-      -first make sure it's being called and popped
-      - switch to bools afterward
-
-    */
-
-//    cout << "printing Q\n";
     Node<twin*> *ptr = q->getHead();
 
     for(; ptr; ptr = ptr->nextNode())
@@ -503,19 +501,19 @@ void Parser::printRPNQueue()
         }
         else// if(ptr->getData()->s == typeid(string*).name())
         {
-//            cout << (*(string*)ptr->getData()->v)[0] << " ";
+            cout << (*(string*)ptr->getData()->v)[0] << " ";
 
-            cout << "\nop\t" << (*(string*)ptr->getData()->v)[0] << " ";
+//            cout << "\nop\t" << (*(string*)ptr->getData()->v)[0] << " ";
 
             twin *temp2 = s_numbers->pop();
             twin *temp1 = s_numbers->pop();
 
-            cout << "\ntemp1 = " << *(mixed*)temp1->v << endl;
-            cout << "temp2 = " << *(mixed*)temp2->v << endl;
+//            cout << "\ntemp1 = " << *(mixed*)temp1->v << endl;
+//            cout << "temp2 = " << *(mixed*)temp2->v << endl;
                                     // call the function pointer
             ((*(mixed*)temp1->v).*fp[(*(string*)ptr->getData()->v)[0]])(*(mixed*)temp2->v);
 
-                        cout << "temp1(2) = " << *(mixed*)temp1->v << endl;
+//                        cout << "temp1(2) = " << *(mixed*)temp1->v << endl;
             s_numbers->push(temp1);
 
         }
