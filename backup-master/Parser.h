@@ -25,6 +25,8 @@ public:
 
     typedef void (mixed::*MixedPtr)(const mixed&);
     typedef void (Parser::*ParserPtr)(Node<twin*>*);
+    typedef void (Parser::*PEDMASPtr)();
+
 
     Parser();
 //    Parser(const Parser &p);
@@ -47,6 +49,7 @@ public:
 private:
     char a[100]; // holds the c_string
 
+    PEDMASPtr pedmas[100];
     ParserPtr pp[2]; // function pointers for the printing of the RPN queue
     MixedPtr mp[100]; // function pointers holds the operations -- seems excessive memory
 
@@ -63,6 +66,14 @@ private:
     void copy(const Parser &p);
     void parse();
     void nukem();
+
+    void enqMixed();
+    void opSwap();
+    void firstParanthesis();
+    void secondParanthesis();
+    void exponent();
+    void md();
+    void as();
 };
 
 
@@ -80,6 +91,15 @@ Parser::Parser()
     mp['*'] = &mixed::multiply;
     mp['/'] = &mixed::divide;
     mp['^'] = &mixed::raiseTo;
+
+
+    pedmas[0] = &Parser::enqMixed;
+    pedmas[1] = &Parser::opSwap; // check its operator
+    pedmas['('] = &Parser::firstParanthesis;
+    pedmas[')'] = &Parser::secondParanthesis;
+    pedmas['^'] = &Parser::exponent;
+    pedmas['*'] = pedmas['/'] = &Parser::md;
+    pedmas['+'] = pedmas['-'] = &Parser::as;
 
 }
 
@@ -117,81 +137,81 @@ void Parser::RPN()
     this->poppingStackAll(); // gets the last operator
 }
 
+
+void Parser::enqMixed()
+{
+    q->enqueue(q_temp->dequeue());
+}
+
+void Parser::opSwap()
+{
+    (this->*pedmas[(*(string*)q_temp->front()->v)[0]])();
+}
+
+void Parser::firstParanthesis()
+{
+    s_operators->push(q_temp->dequeue());
+    orderOfPrecedence(); // recursive
+//    break;
+}
+
+void Parser::secondParanthesis()
+{
+    q_temp->dequeue();
+    this->poppingStackParentheses(); // pops stack until the (
+}
+
+void Parser::exponent()
+{
+    s_operators->push(q_temp->dequeue());
+    q->enqueue(q_temp->dequeue());
+    q->enqueue(s_operators->pop());
+}
+
+void Parser::md()
+{
+    // swap
+    if (!s_operators->empty() &&
+            (*(string*)s_operators->peek()->v == "*"
+             || *(string*)s_operators->peek()->v == "/"))
+    {
+        q->enqueue(s_operators->pop());
+    }
+
+    s_operators->push(q_temp->dequeue());
+}
+
+void Parser::as()
+{
+    // needs to be a while loop otherwise errors
+    while( !s_operators->empty() &&
+          (*(string*)s_operators->peek()->v == "*" ||
+           *(string*)s_operators->peek()->v == "/" ||
+           *(string*)s_operators->peek()->v == "+" ||
+           *(string*)s_operators->peek()->v == "-") )
+    {
+        q->enqueue(s_operators->pop());
+    }
+    s_operators->push(q_temp->dequeue());
+
+}
+
+
+
 // PEMDAS
 void Parser::orderOfPrecedence()
 {
     // it starts out with a number
     while(!q_temp->empty())
     {
-        // it's a mixed object
-        if (q_temp->front()->b == false)
-        {
-            q->enqueue(q_temp->dequeue());
-        }
-        // if it's an operator, do this
-        else if (q_temp->front()->b == true)
-        {
+        (this->*pedmas[q_temp->front()->b])();
 
-            // PEMDAS
-
-            // (P)arentheses
-            if(*(string*)q_temp->front()->v == "(")
-            {
-                s_operators->push(q_temp->dequeue());
-                orderOfPrecedence(); // recursive
-                break;
-            }
-            else if (*(string*)q_temp->front()->v == ")")
-            {
-                q_temp->dequeue();
-                this->poppingStackParentheses(); // pops stack until the (
-
-                // stop loop
-                break;
-            }
-
-            // (E)xponents
-            // order precedence
-            if (*(string*)q_temp->front()->v == "^")
-            {
-                s_operators->push(q_temp->dequeue());
-                q->enqueue(q_temp->dequeue());
-                q->enqueue(s_operators->pop());
-
-            }
-            // (M)ultiplication && (D)ivide (left to right)
-            else if (*(string*)q_temp->front()->v == "*" || *(string*)q_temp->front()->v == "/")
-            {
-                // swap
-                if (!s_operators->empty() &&
-                        (*(string*)s_operators->peek()->v == "*"
-                         || *(string*)s_operators->peek()->v == "/"))
-                {
-                    q->enqueue(s_operators->pop());
-                }
-
-                s_operators->push(q_temp->dequeue());
             } // else if (* || /)
             // (A)ddition && (S)ubstraction (left to right)
-            else if (*(string*)q_temp->front()->v == "+" || *(string*)q_temp->front()->v == "-")
-            {
-                // needs to be a while loop otherwise errors
-                while( !s_operators->empty() &&
-                      (*(string*)s_operators->peek()->v == "*" ||
-                       *(string*)s_operators->peek()->v == "/" ||
-                       *(string*)s_operators->peek()->v == "+" ||
-                       *(string*)s_operators->peek()->v == "-") )
-                {
-                    q->enqueue(s_operators->pop());
-                }
-                s_operators->push(q_temp->dequeue());
-            } // else if (+ || -)
 
-        } // else if (string*)
+} // while (!empty)
 
-    } // while (!empty)
-
-}// orderOfPrecedence
+//}// orderOfPrecedence
 
 void Parser::poppingStackParentheses()
 {
