@@ -206,12 +206,8 @@ void Parser::orderOfPrecedence()
     {
         (this->*pedmas[q_temp->front()->b])();
 
-            } // else if (* || /)
-            // (A)ddition && (S)ubstraction (left to right)
-
-} // while (!empty)
-
-//}// orderOfPrecedence
+    }
+}
 
 void Parser::poppingStackParentheses()
 {
