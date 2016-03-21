@@ -74,6 +74,7 @@ private:
     void orderOfPrecedence();
     void copy(const Parser &p);
     void parse();
+    void nukem();
 };
 
 
@@ -197,6 +198,9 @@ void Parser::orderOfPrecedence()
                 }
 
                 s_operators->push(q_temp->dequeue());
+
+
+//                s_operators->push(q_temp->dequeue());
             }
             // if there's a +, and the stack is a *,/,-, then pop stack and enqueue, then push
             // (because - is not commutative)
@@ -208,19 +212,23 @@ void Parser::orderOfPrecedence()
                 // if stack not empty, compare
 //                if (!s_operators->empty())
 //                {
-                while(!s_operators->empty() && (*(string*)s_operators->peek()->v == "*" || *(string*)s_operators->peek()->v == "/"))
+                while( !s_operators->empty() &&
+                      (*(string*)s_operators->peek()->v == "*" ||
+                       *(string*)s_operators->peek()->v == "/" ||
+                       *(string*)s_operators->peek()->v == "+" ||
+                       *(string*)s_operators->peek()->v == "-") )
                 {
                     q->enqueue(s_operators->pop());
                 }
-                if (!s_operators->empty() &&
-                        (*(string*)s_operators->peek()->v == "-"
-                         || *(string*)s_operators->peek()->v == "+"))
-                {
+//                if (!s_operators->empty() &&
+//                        (*(string*)s_operators->peek()->v == "-"
+//                         || *(string*)s_operators->peek()->v == "+"))
+//                {
                     // swap
 //                        q->enqueue(s_numbers->pop());
-                    q->enqueue(s_operators->pop());
+//                    q->enqueue(s_operators->pop());
 //                                        s_operators->push(q_temp->dequeue());
-                }
+//                }
 
 //                }
 
@@ -287,6 +295,20 @@ void Parser::poppingStackAll()
         q->enqueue(s_operators->pop());
 
     }
+}
+
+
+
+void Parser::nukem()
+{
+
+    memset(a, 0, 255);
+//    a = NULL;
+
+    q->clear();
+    q_temp->clear();
+    s_numbers->clear();
+    s_operators->clear();
 }
 
 // first function called
@@ -532,6 +554,8 @@ void Parser::printRPNQueue()
 
     cout << " = " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
 
+
+    this->nukem();
 
 }
 

@@ -141,6 +141,7 @@ template<typename T>
 void Queue<T>::clear()
 {
     nukem();
+    max_qty = 50;
 }
 
 template<typename T>

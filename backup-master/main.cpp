@@ -36,14 +36,27 @@ int main()
 {
     cout << "This program takes an algebraic expression,\nand translates it into Reverse Polish Notation\n\n";
 
+    char ans = 'y';
     Parser *p = new Parser;
 
-    p->getInput();
 
-    p->RPN();
+    while (ans == 'y')
+    {
 
-//    p->printTempQueue();
-    p->printRPNQueue();
+        p->getInput();
+
+        p->RPN();
+
+        p->printRPNQueue();
+
+        cout << "\nContinue? (y/n)  ";
+        cin >> ans;
+        cin.ignore();
+
+        ans = tolower(ans);
+
+        cout << endl;
+    }
 
     return 0;
 }
