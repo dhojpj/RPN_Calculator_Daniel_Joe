@@ -19,13 +19,12 @@ class Parser
 public:
     struct twin
     {
-        bool b; // 0 is operator, 1 is mixed
-        string s;
+        bool b; // 0 is mixed, 1 is operator
         void* v;
     };
 
-    typedef void (mixed::*functPtr)(const mixed&);
-
+    typedef void (mixed::*MixedPtr)(const mixed&);
+    typedef void (Parser::*ParserPtr)(Node<twin*>*);
 
     Parser();
 //    Parser(const Parser &p);
@@ -47,7 +46,9 @@ public:
 
 private:
     char a[100]; // holds the c_string
-    functPtr fp[100]; // holds the operations
+
+    ParserPtr pp[2]; // function pointers for the printing of the RPN queue
+    MixedPtr mp[100]; // function pointers holds the operations -- seems excessive memory
 
     Stack<twin*> *s_numbers;
     Stack<twin*> *s_operators;
@@ -55,6 +56,8 @@ private:
     Queue<twin*> *q_temp;
 
 
+    void twin_true(Node<twin*> *ptr);
+    void twin_false(Node<twin*> *ptr);
     void createToken(char *t);
     void orderOfPrecedence(); // PEMDAS
     void copy(const Parser &p);
@@ -69,14 +72,14 @@ Parser::Parser()
     s_operators = new Stack<twin*>;
     q = new Queue<twin*>;
     q_temp = new Queue<twin*>;
-//    fp = new functPtr[100];
 
-
-    fp['+'] = &mixed::add;
-    fp['-'] = &mixed::subtract;
-    fp['*'] = &mixed::multiply;
-    fp['/'] = &mixed::divide;
-    fp['^'] = &mixed::raiseTo;
+    pp[0] = &Parser::twin_false;
+    pp[1] = &Parser::twin_true;
+    mp['+'] = &mixed::add;
+    mp['-'] = &mixed::subtract;
+    mp['*'] = &mixed::multiply;
+    mp['/'] = &mixed::divide;
+    mp['^'] = &mixed::raiseTo;
 
 }
 
@@ -121,12 +124,12 @@ void Parser::orderOfPrecedence()
     while(!q_temp->empty())
     {
         // it's a mixed object
-        if (q_temp->front()->s == typeid(mixed*).name())
+        if (q_temp->front()->b == false)
         {
             q->enqueue(q_temp->dequeue());
         }
         // if it's an operator, do this
-        else if (q_temp->front()->s == typeid(string*).name())
+        else if (q_temp->front()->b == true)
         {
 
             // PEMDAS
@@ -266,7 +269,7 @@ void Parser::createToken(char *t)
         string *s_d = new string;
         *s_d = (string)t;
 
-        tw->s = typeid(string*).name();
+        tw->b = true;
         tw->v = s_d;
     }
     else // it's a number
@@ -281,7 +284,7 @@ void Parser::createToken(char *t)
                 double d;// = new double;
                 ss >> d;
 
-                tw->s = typeid(mixed*).name();
+                tw->b = false;
 
                 mixed *m = new mixed;
 
@@ -301,7 +304,7 @@ void Parser::createToken(char *t)
                 string fractDenom = fract.substr(i+2, fract.length());
 
                 // making a mixed number
-                if (q_temp->back()->s == typeid(mixed*).name())
+                if (q_temp->back()->b == false)
                 {
                     fraction f_temp;
                     f_temp.setValue(atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
@@ -317,7 +320,7 @@ void Parser::createToken(char *t)
                 else
                 {
                     mixed *m = new mixed(0, atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
-                    tw->s = typeid(mixed*).name();
+                    tw->b = false;
                     tw->v = m;
                 }
 
@@ -333,7 +336,7 @@ void Parser::createToken(char *t)
 
             mixed *m = new mixed(i,0,1);
 
-            tw->s = typeid(mixed*).name();
+            tw->b = false;
             tw->v = m;
         }
 
@@ -349,26 +352,8 @@ void Parser::printRPNQueue()
 
     for(; ptr; ptr = ptr->nextNode())
     {
-        if (ptr->getData()->s == typeid(mixed*).name())
-        {
-            cout << *(mixed*)ptr->getData()->v << " ";
-
-            // push onto stack
-            s_numbers->push((twin*)ptr->getData());
-        }
-        else
-        {
-            cout << (*(string*)ptr->getData()->v)[0] << " ";
-
-            twin *temp2 = s_numbers->pop();
-            twin *temp1 = s_numbers->pop();
-
-            // call the function pointer
-            ((*(mixed*)temp1->v).*fp[(*(string*)ptr->getData()->v)[0]])(*(mixed*)temp2->v);
-
-            s_numbers->push(temp1);
-        }
-
+        // calling a function pointer depending if it's bool false/true (i.e. mixed/operator)
+        (this->*pp[ptr->getData()->b])(ptr);
     }
 
     cout << "\t";
@@ -383,6 +368,27 @@ void Parser::printRPNQueue()
     cout << " = " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
 
     this->nukem(); // to clear memory for the next set
+}
+
+void Parser::twin_false(Node<twin*> *ptr)
+{
+    cout << *(mixed*)ptr->getData()->v << " ";
+
+    // push onto stack
+    s_numbers->push((twin*)ptr->getData());
+}
+
+void Parser::twin_true(Node<twin*> *ptr)
+{
+    cout << (*(string*)ptr->getData()->v)[0] << " ";
+
+    twin *temp2 = s_numbers->pop();
+    twin *temp1 = s_numbers->pop();
+
+    // call the function pointer
+    ((*(mixed*)temp1->v).*mp[(*(string*)ptr->getData()->v)[0]])(*(mixed*)temp2->v);
+
+    s_numbers->push(temp1);
 }
 
 istream& operator>>(istream &in, Parser &p)
