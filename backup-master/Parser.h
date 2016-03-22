@@ -38,6 +38,7 @@ public:
 
     void getInput();
     void printRPNQueue();
+    mixed getAnswer();
 
     void RPN();
     void poppingStackParentheses();
@@ -57,6 +58,7 @@ private:
     Stack<twin*> *s_operators;
     Queue<twin*> *q;
     Queue<twin*> *q_temp;
+    mixed answer;
 
 
     void twin_true(Node<twin*> *ptr);
@@ -353,7 +355,7 @@ void Parser::createToken(char *t)
                 string fractDenom = fract.substr(i+2, fract.length());
 
                 // making a mixed number
-                if (q_temp->back()->b == false)
+                if (!q_temp->empty() && q_temp->back()->b == false)
                 {
                     fraction f_temp;
                     f_temp.setValue(atoi(fractNum.c_str()), atoi(fractDenom.c_str()));
@@ -372,6 +374,7 @@ void Parser::createToken(char *t)
                     tw->b = false;
                     tw->v = m;
                 }
+
 
                 isInt = false;
                 done = true;
@@ -415,9 +418,16 @@ void Parser::printRPNQueue()
                 /(double)(*(mixed*)s_numbers->peek()->v).get_denom();
     }
 
-    cout << " = " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
+    answer = *(mixed*)s_numbers->pop()->v;
+
+    cout << " = " << answer << endl; // insert stack answer
 
     this->nukem(); // to clear memory for the next set
+}
+
+mixed Parser::getAnswer()
+{
+    return answer;
 }
 
 void Parser::twin_false(Node<twin*> *ptr)

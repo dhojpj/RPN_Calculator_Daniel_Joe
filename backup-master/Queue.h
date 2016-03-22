@@ -252,6 +252,7 @@ T Queue<T>::front() const
 template<typename T>
 T Queue<T>::back() const
 {
+//    cout << "because?\n";
 //    T d = tail->getData();
     return tail->getData();
 } // so can't change it and won't fire a copy constructor // how??
