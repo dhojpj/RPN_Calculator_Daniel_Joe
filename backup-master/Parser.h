@@ -84,6 +84,24 @@ Parser::Parser()
     q = new Queue<twin*>;
     q_temp = new Queue<twin*>;
 
+
+	// typedef void (mixed::*MixedPtr)(const mixed&);
+//	    typedef void (Parser::*ParserPtr)(Node<twin*>*);
+	  //  typedef void (Parser::*PEDMASPtr)();
+
+//PEDMASPtr pedmas[100];
+  //  ParserPtr pp[2]; // function pointers for the printing of the RPN queue
+  //  MixedPtr mp[100]; // function pointers holds the operations -- seems excessive memory
+
+
+
+// print tempqueue 
+	// for algebraic expression
+
+
+
+
+
     pp[0] = &Parser::twin_false;
     pp[1] = &Parser::twin_true;
     mp['+'] = &mixed::add;
@@ -93,8 +111,20 @@ Parser::Parser()
     mp['^'] = &mixed::raiseTo;
 
 
+// pedmas A-Z = a-z
+// =	assign string
+// or /0	print,RPN call
+// if qtemp !empty
+// call = operator
+// else rpn
+
+
+
     pedmas[0] = &Parser::enqMixed;
     pedmas[1] = &Parser::opSwap; // check its operator
+    
+    
+    
     pedmas['('] = &Parser::firstParanthesis;
     pedmas[')'] = &Parser::secondParanthesis;
     pedmas['^'] = &Parser::exponent;
