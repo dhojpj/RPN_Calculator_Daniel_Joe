@@ -1,6 +1,8 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+// parses the string input using stacks and queues
+// does the reverse polish notation, prints and returns the answer
 
 #include <iostream>
 #include <cstring>

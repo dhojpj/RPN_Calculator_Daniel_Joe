@@ -5,7 +5,7 @@ using namespace std;
 
 memory::memory()
 {
-    size = 30;
+    size = 27;
     mem = new mixed[size];
     clearPrivate();
 }

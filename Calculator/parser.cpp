@@ -1,5 +1,5 @@
 
-#include "parser.h"
+#include "Parser.h"
 #include <iostream>
 #include <cstring>
 #include "Queue.h"
@@ -307,14 +307,15 @@ void Parser::printRPNQueue()
 {
     Node<twin*> *ptr = q->getHead();
 
+    cout << "Reverse Polish Notation:  ";
+
     for(; ptr; ptr = ptr->nextNode())
     {
-//        cout << "printing\n";
         // calling a function pointer depending if it's bool false/true (i.e. mixed/operator)
         (this->*pp[ptr->getData()->b])(ptr);
     }
 
-    cout << "\t";
+    cout << endl;
 
     // printing in double
     if ((*(mixed*)s_numbers->peek()->v).get_denom() > 1)
@@ -323,7 +324,6 @@ void Parser::printRPNQueue()
                 /(double)(*(mixed*)s_numbers->peek()->v).get_denom();
     }
 
-    cout << " = " << *(mixed*)s_numbers->pop()->v << endl; // insert stack answer
     answer = *(mixed*)s_numbers->pop()->v;
     cout << " = " << answer << endl; // insert stack answer
     this->nukem(); // to clear memory for the next set

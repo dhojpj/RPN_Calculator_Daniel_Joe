@@ -37,8 +37,7 @@ calculator::~calculator()
 void calculator::commands()
 {
     string userInput = "a = -2 1/2 + c", lhs, rhs, toBePrase="";
-    // -2 1/2 + 0
-//    userInput = "write<a.txt>";
+
     string nochangestr;
     string fileName = "untitled";
     string clear = "CLEAR";
@@ -46,22 +45,15 @@ void calculator::commands()
     string exit = "EXIT";
     string write = "WRITE";
     string read = "READ";
+    mixed mTemp = 0;
     int equalIndex;
-
-
-    m->setMemory('M'-'A',1);
-    m->setMemory('C'-'A',1);
-    m->setMemory('D'-'A',.5);
-    m->readMemory("store.txt");
 
     while(1)
     {
-        cout<<"Enter an expression or command: ";
+        cout<<"\nEnter an expression or command: ";
         getline(cin, userInput);
 
         //check if the user saved the memory or not
-
-
 
         //if user press enter
         if(userInput.length()==0)
@@ -120,8 +112,8 @@ void calculator::commands()
                 throw MEMORYINDEXERROR;
 
 
-            rhs = trimBoth(userInput.substr(equalIndex+1, userInput.size()));
-            rhs = replaceLetter(rhs);
+            //rhs = trimBoth(userInput.substr(equalIndex+1, userInput.size()));
+            rhs = userInput.substr(equalIndex+1, userInput.size());
             // if the right hand side is size 1
             // store that memory slot the he lhs
             if(rhs.length() == 1)
@@ -136,8 +128,9 @@ void calculator::commands()
                 }
                 else if(isdigit(rhs[0]))
                 {
-                    m->setMemory(lhs[0]-'A',m->getMemory((rhs[0]-'0')));
+                    m->setMemory(lhs[0]-'A',(rhs[0]-'0'));
                     cout<<"Memory in slot "<<lhs[0]<<" changed to: "<<(rhs[0]-'0')<<endl;
+                    cout<<*m<<endl;
 
                 }
                 else
@@ -151,14 +144,9 @@ void calculator::commands()
                 //if there are no operator
                     // convert the rhs to a mixed fraction
                 //process rhs to get a mixed fraction
-                cout<<"right of =: need to send to parser!"<<rhs<<endl;
-                toBePrase = rhs;
 
-                mixed mTemp(1,2,3);
-
-                cout<<lhs[0]<<" "<<"size: "<<(lhs[0]-'A')<<endl;
-                m->setMemory((lhs[0]-'A'),mTemp);
-                cout<<*m<<endl;
+//                cout<<"right of =: need to send to parser!"<<rhs<<endl;
+                toBePrase = replaceLetter(rhs);
             }
             saved = isSaved(userInput);
         }
@@ -169,6 +157,7 @@ void calculator::commands()
             string qut = userInput.substr(0,quit.length());
             string wrt = userInput.substr(0, write.length());
             string rd = userInput.substr(0, read.length());
+
             if(userInput.length() == 1&&isalpha(userInput[0]))
             {
                 cout<<userInput[0]<<" = "<<m->getMemory(userInput[0]-'A')<<endl;
@@ -254,54 +243,32 @@ void calculator::commands()
             }
             else // some expression is enter need to prase it
             {
-                toBePrase = userInput;
-                userInput = replaceLetter(userInput);
 
+                userInput = replaceLetter(userInput);
+                cout<<"userInput: "<<userInput<<endl;
+                toBePrase = userInput;
             }
         }
 
-        if(toBePrase.size()>0)
+        if(toBePrase.size()>1)
         {
-            cout<<"tobeprase: "<<toBePrase<<endl;
+//            cout<<"tobeprase: "<<toBePrase<<endl;
             p->getInput(toBePrase);
             p->RPN();
             p->printRPNQueue();
+            mTemp = p->getAnswer();
             cout << endl;
-            toBePrase ="";
+
         }
 
+        if(equalIndex!= -1 && toBePrase.size() > 1)
         {
-        //        1.1 // if there's an equal sign splite to two
-        //            1.1.1//lhs convert to a integer for memory location
-        //                    1.1.1.1 //trim both side and remove the equal side
-        //                    1.1.1.2 // convert the letter to an index for the memorty slot
-        //            1.1.2 //rhs pass it to the parser to be processed;
-        //                    //might have to check for letters
-        //                    // if there are letters convert them to mixed fraction
-        //                    1.1.2.1 //do the calculation and return a mixed fration
-        //            1.1.3 set the index from 1.1.1.2 to the mixed fraction from 1.1.2.1
-        //    //when there are no euqal sign check for "CLEAR"
-        //        //if there's a clear
-        //            if it match "CLEAR"
-        //                clear all the memory slots
-        //            if it does not match "CLEAR"
-        //                find the index of "<" then access that index +1
-        //                to find the letter's memeory location to clear
-        //     //exit or quit
-        //        when exit or quit is detected
-        //            check if the file is saved
-        //               if file is saved exit the program
-        //               else if not saved ask user to save the file
-        //                    if no exit
-        //                    if yes ask for file name and save the file with the given0 namespace
-        //        when exit <filename> or quit<filename> is detected
-        //            save memory to file
-        //            exit calculator
-        //     //write<filename>
-        //            save the memory with the give file name
 
+//            cout<<lhs[0]<<" "<<"size: "<<(lhs[0]-'A')<<endl;
+            m->setMemory((lhs[0]-'A'),mTemp);
+            cout<<*m<<endl;
         }
-
+        toBePrase ="";
     }
 }
 
@@ -343,9 +310,9 @@ void calculator::exitCalculator()
 string calculator::replaceLetter(string str)
 {
     string l = "ABCDEFGHIJLKMNOPQRSTUVWXYZ";
-    string token="", del,s=str;
+    string token="", del, s=str;
     stringstream ss;
-    string temp2;
+    string temp2="";
     size_t pos = 0;
 
     for(unsigned int a = 0; a < l.length(); a++)
@@ -355,15 +322,20 @@ string calculator::replaceLetter(string str)
         ss.str("");
         ss.clear();
 
+        //when pos is not equal to -1
         while ((pos = s.find(del)) != std::string::npos) {
             token =s.substr(0, pos);
+            cout<<"token: "<<token<<endl;
             temp2+=token;
             temp2+= m->toString(del[0]-'A');
             s.erase(0, pos + del.length());
         }
     }
-    cout<<temp2<<endl;
 
-    return temp2;
+    //if there are characters after the last letter add them back in
+    temp2+=s;
+
+    //if no letter are replaced return the orginal str
+    return temp2.size() <= 0 ? str : temp2;
 }
 

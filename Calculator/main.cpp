@@ -45,6 +45,10 @@ struct twin
 int main()
 {
 
+    cout << "This program takes an algebraic expression,"
+            << endl << "and translates it to Reverse Polish Notation"
+            << endl << "(Make sure to include a space between numbers and operators)"
+            << endl << "(Press return or type \"QUIT\" or \"EXIT\" to exit)" << endl;
     calculator c;
     c.commands();
 
